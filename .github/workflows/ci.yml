@@ -1,0 +1,76 @@
+name: 🔄 Continuous Integration
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: 'EasyCodeBuilder/EasyCodeBuilder.csproj'
+
+jobs:
+  build:
+    name: 🔨 Build & Test
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: ⚙️ Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Restore dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+      
+    - name: 🔨 Build project
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      
+    - name: 🧪 Run tests
+      run: |
+        if [ -d "tests" ] || [ -d "test" ] || [ -d "Tests" ] || [ -d "Test" ]; then
+          echo "Running tests..."
+          dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        else
+          echo "No test projects found, skipping tests"
+        fi
+      shell: bash
+      
+    - name: 📦 Test package creation
+      run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./test-packages
+      
+    - name: 📋 List test packages
+      run: ls -la ./test-packages
+      shell: bash
+
+  code-quality:
+    name: 🔍 Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: ⚙️ Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Restore dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+      
+    - name: 🔍 Run code analysis
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --verbosity normal
+      
+    - name: 📊 Check XML documentation
+      run: |
+        echo "Checking for XML documentation warnings..."
+        dotnet build ${{ env.PROJECT_PATH }} --configuration Release --verbosity normal 2>&1 | grep -i "warning CS1591" || echo "No missing XML documentation warnings found" 
