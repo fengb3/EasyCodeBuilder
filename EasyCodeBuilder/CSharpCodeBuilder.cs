@@ -226,7 +226,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(initialValue))
         {
             // 简单情况：modifiers type name accessors;
-            int totalLength = modifiers.Length + 1 + type.Length + 1 + name.Length + 1 + accessors.Length + 1;
+            int totalLength = modifiers.Length + 1 + type.Length + 1 + name.Length + 1 + accessors.Length; //+ 1;
 
             return string.Create(totalLength, (modifiers, type, name, accessors), static (span, state) =>
             {
@@ -245,7 +245,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
 
                 state.accessors.AsSpan().CopyTo(span[pos..]);
                 pos += state.accessors.Length;
-                span[pos] = ';';
+                // span[pos] = ';';
             });
         }
         else
@@ -412,7 +412,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <param name="keyword">The keyword</param>
     /// <param name="condition">The condition or parameter</param>
     /// <returns>The constructed statement</returns>
-    private static string BuildKeywordStatement(string keyword, string condition)
+    private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
         int totalLength = keyword.Length + 2 + condition.Length;
@@ -724,6 +724,49 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         => func => Method(name, func, returnType, modifiers, parameters);
 
     /// <summary>
+    /// Adds a constructor definition
+    /// </summary>
+    /// <param name="name">The constructor name</param>
+    /// <param name="action">The code building action to execute within the constructor</param>
+    /// <param name="parameters">The parameter list (default is empty)</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Constructor(string name,Action<CSharpCodeBuilder> action, string parameters, string modifiers = "public", string? baseClass = null)
+    {
+        var constructorSignature = BuildMethodSignature(modifiers, "", name, parameters);
+        AppendLine(constructorSignature + (baseClass != null ? $" : base({baseClass})" : ""));
+        CodeBlock(action);
+        return this;
+    }
+
+        /// <summary>
+    /// Adds a constructor definition
+    /// </summary>
+    /// <param name="name">The constructor name</param>
+    /// <param name="func">The code building action to execute within the constructor</param>
+    /// <param name="parameters">The parameter list (default is empty)</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Constructor(string name,Func<CSharpCodeBuilder, CSharpCodeBuilder> func, string parameters, string modifiers = "public", string? baseClass = null)
+    {
+        var constructorSignature = BuildMethodSignature(modifiers, "", name, parameters);
+        AppendLine(constructorSignature + (baseClass != null ? $" : base({baseClass})" : ""));
+        CodeBlock(func);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a constructor definition (curried version)
+    /// </summary>
+    /// <param name="name">The constructor name</param>
+    /// <param name="parameters">The parameter list (default is empty)</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>A function that receives a code building operation and returns the builder instance</returns>
+    public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> Constructor(string name, string parameters, string modifiers = "public", string? baseClass = null)
+        => func => Constructor(name, func, parameters, modifiers, baseClass);
+
+
+    /// <summary>
     /// Adds a property definition
     /// </summary>
     /// <param name="type">The property type</param>
@@ -737,7 +780,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         string accessors = "{ get; set; }")
     {
         var prop = BuildPropertyDeclaration(modifiers, type, name, accessors, initialValue);
-        return (CSharpCodeBuilder)AppendLine(prop);
+        return AppendLine(prop);
     }
 
     /// <summary>
@@ -799,7 +842,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder If(string condition, Action<CSharpCodeBuilder> action)
     {
-        AppendLine(BuildKeywordStatement("if", condition));
+        AppendLine(BuildParameterizedStatement("if", condition));
         CodeBlock(action);
         return this;
     }
@@ -812,7 +855,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder If(string condition, Func<CSharpCodeBuilder, CSharpCodeBuilder> func)
     {
-        AppendLine(BuildKeywordStatement("if", condition));
+        AppendLine(BuildParameterizedStatement("if", condition));
         CodeBlock(func);
         return this;
     }
@@ -833,7 +876,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder ElseIf(string condition, Action<CSharpCodeBuilder> action)
     {
-        AppendLine(BuildKeywordStatement("else if", condition));
+        AppendLine(BuildParameterizedStatement("else if", condition));
         CodeBlock(action);
         return this;
     }
@@ -846,7 +889,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder ElseIf(string condition, Func<CSharpCodeBuilder, CSharpCodeBuilder> func)
     {
-        AppendLine(BuildKeywordStatement("else if", condition));
+        AppendLine(BuildParameterizedStatement("else if", condition));
         CodeBlock(func);
         return this;
     }
@@ -978,7 +1021,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder While(string condition, Action<CSharpCodeBuilder> action)
     {
-        AppendLine(BuildKeywordStatement("while", condition));
+        AppendLine(BuildParameterizedStatement("while", condition));
         CodeBlock(action);
         return this;
     }
@@ -991,7 +1034,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder While(string condition, Func<CSharpCodeBuilder, CSharpCodeBuilder> func)
     {
-        AppendLine(BuildKeywordStatement("while", condition));
+        AppendLine(BuildParameterizedStatement("while", condition));
         CodeBlock(func);
         return this;
     }

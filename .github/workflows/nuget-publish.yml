@@ -18,9 +18,35 @@ env:
   NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
 
 jobs:
+  permission-check:
+    name: 🔐 Permission Check
+    runs-on: ubuntu-latest
+    outputs:
+      is-authorized: ${{ steps.check.outputs.authorized }}
+    
+    steps:
+    - name: 🔍 Check user permissions
+      id: check
+      run: |
+        echo "Triggered by: ${{ github.actor }}"
+        echo "Repository owner: ${{ github.repository_owner }}"
+        echo "Event name: ${{ github.event_name }}"
+        
+        # 检查是否是仓库所有者
+        if [ "${{ github.actor }}" = "${{ github.repository_owner }}" ]; then
+          echo "✅ User is repository owner - authorized"
+          echo "authorized=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ User is not repository owner - unauthorized"
+          echo "authorized=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+      
   build-and-test:
     name: 🔨 Build & Test
     runs-on: ubuntu-latest
+    needs: permission-check
+    if: needs.permission-check.outputs.is-authorized == 'true'
     
     steps:
     - name: 📥 Checkout code
@@ -48,10 +74,17 @@ jobs:
       
   publish:
     name: 📦 Publish to NuGet
-    needs: build-and-test
+    needs: [permission-check, build-and-test]
     runs-on: ubuntu-latest
+    environment: production  # 🔒 需要environment审批
+    if: needs.permission-check.outputs.is-authorized == 'true'
     
     steps:
+    - name: 🔐 Final permission verification
+      run: |
+        echo "🔍 Final verification - User: ${{ github.actor }}"
+        echo "✅ Authorized user confirmed: ${{ github.actor }}"
+        
     - name: 📥 Checkout code
       uses: actions/checkout@v4
       
@@ -94,6 +127,7 @@ jobs:
       
     - name: 🚀 Publish package to NuGet
       run: |
+        echo "🚀 Publishing as authorized user: ${{ github.actor }}"
         dotnet nuget push "${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg" \
           --api-key ${{ secrets.NUGET_API_KEY }} \
           --source ${{ env.NUGET_SOURCE_URL }} \
@@ -115,6 +149,9 @@ jobs:
         release_name: Release ${{ steps.version.outputs.VERSION }}
         body: |
           ## 🚀 Release ${{ steps.version.outputs.VERSION }}
+          
+          ### 👤 Released by
+          **${{ github.actor }}** (Repository Owner)
           
           ### 📦 NuGet Package
           - **Package**: [Fengb3.EasyCodeBuilder](https://www.nuget.org/packages/Fengb3.EasyCodeBuilder/)

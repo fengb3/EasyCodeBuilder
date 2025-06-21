@@ -11,4 +11,14 @@
       <ProjectReference Include="..\..\EasyCodeBuilder\EasyCodeBuilder.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="EPPlus" Version="7.5.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="TestExcel.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
