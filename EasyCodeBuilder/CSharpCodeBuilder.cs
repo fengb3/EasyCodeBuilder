@@ -24,8 +24,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <param name="indentChar">The character used for indentation</param>
     /// <param name="indentCount">The number of indent characters</param>
     /// <param name="initialCapacity">The initial capacity (default is 1024)</param>
-    public CSharpCodeBuilder(string indentChar, int indentCount, int initialCapacity = 1024)
-        : base(indentChar, indentCount, "{", "}", initialCapacity)
+    public CSharpCodeBuilder(string indentChar, int indentCount, int initialCapacity = 1024) : base(indentChar, indentCount, "{", "}", initialCapacity)
     {
         Self = this;
     }
@@ -764,6 +763,79 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>A function that receives a code building operation and returns the builder instance</returns>
     public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> Constructor(string name, string parameters, string modifiers = "public", string? baseClass = null)
         => func => Constructor(name, func, parameters, modifiers, baseClass);
+
+    /// <summary>
+    /// Adds a deconstructor definition
+    /// </summary>
+    /// <param name="action">The code building action to execute within the deconstructor</param>
+    /// <param name="parameters">The parameter list with out parameters</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Deconstructor(Action<CSharpCodeBuilder> action, string parameters, string modifiers = "public")
+    {
+        var deconstructorSignature = BuildMethodSignature(modifiers, "void", "Deconstruct", parameters);
+        AppendLine(deconstructorSignature);
+        CodeBlock(action);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a deconstructor definition using a function
+    /// </summary>
+    /// <param name="func">The code building function to execute within the deconstructor</param>
+    /// <param name="parameters">The parameter list with out parameters</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Deconstructor(Func<CSharpCodeBuilder, CSharpCodeBuilder> func, string parameters, string modifiers = "public")
+    {
+        var deconstructorSignature = BuildMethodSignature(modifiers, "void", "Deconstruct", parameters);
+        AppendLine(deconstructorSignature);
+        CodeBlock(func);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a deconstructor definition (curried version)
+    /// </summary>
+    /// <param name="parameters">The parameter list with out parameters</param>
+    /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <returns>A function that receives a code building operation and returns the builder instance</returns>
+    public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> Deconstructor(string parameters, string modifiers = "public")
+        => func => Deconstructor(func, parameters, modifiers);
+
+    /// <summary>
+    /// Adds a destructor definition (finalizer)
+    /// </summary>
+    /// <param name="className">The class name for the destructor</param>
+    /// <param name="action">The code building action to execute within the destructor</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Destructor(string className, Action<CSharpCodeBuilder> action)
+    {
+        AppendLine($"~{className}()");
+        CodeBlock(action);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a destructor definition (finalizer) using a function
+    /// </summary>
+    /// <param name="className">The class name for the destructor</param>
+    /// <param name="func">The code building function to execute within the destructor</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder Destructor(string className, Func<CSharpCodeBuilder, CSharpCodeBuilder> func)
+    {
+        AppendLine($"~{className}()");
+        CodeBlock(func);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a destructor definition (finalizer) - curried version
+    /// </summary>
+    /// <param name="className">The class name for the destructor</param>
+    /// <returns>A function that receives a code building operation and returns the builder instance</returns>
+    public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> Destructor(string className)
+        => func => Destructor(className, func);
 
 
     /// <summary>
