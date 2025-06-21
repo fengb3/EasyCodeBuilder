@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Fengb3.EasyCodeBuilder;
 
 /// <summary>
-/// Python 代码生成器 - 继承自 CodeBuilder，提供 Python 特定的代码生成方法
+/// Python 代码生成器 - 继承自 EasyCodeBuilder，提供 Python 特定的代码生成方法
 /// </summary>
 public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
 {

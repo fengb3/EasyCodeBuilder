@@ -240,7 +240,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     // /// <typeparam name="T">构建器类型</typeparam>
     // /// <param name="action">在代码块内执行的操作</param>
     // /// <returns>当前构建器实例</returns>
-    // protected T CodeBlock<T>(Action<T> action) where T : CodeBuilder
+    // protected T CodeBlock<T>(Action<T> action) where T : EasyCodeBuilder
     // {
     //     return CodeBlock<T>(null, action);
     // }
@@ -296,7 +296,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     // /// <param name="prefix">代码块前缀</param>
     // /// <param name="action">在代码块内执行的操作</param>
     // /// <returns>当前构建器实例</returns>
-    // protected T CodeBlock<T>(string? prefix, Action<T> action) where T : CodeBuilder
+    // protected T CodeBlock<T>(string? prefix, Action<T> action) where T : EasyCodeBuilder
     // {
     //     string header;
     //     if (prefix is null)

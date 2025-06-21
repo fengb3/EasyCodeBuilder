@@ -3,7 +3,7 @@ using System;
 namespace Fengb3.EasyCodeBuilder;
 
 /// <summary>
-/// Lisp 代码生成器 - 继承自 CodeBuilder，提供 Lisp 特定的代码生成方法
+/// Lisp 代码生成器 - 继承自 EasyCodeBuilder，提供 Lisp 特定的代码生成方法
 /// </summary>
 public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
 {

@@ -16,11 +16,12 @@
         <Version>0.0.1</Version>
         <Authors>Bohan Feng</Authors>
         <Description>A library for dynamic code generation, supporting Multiple Languages</Description>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageProjectUrl>https://github.com/fengb3/EasyCodeBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/fengb3/EasyCodeBuilder</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageTags>code-generation;csharp;python;lisp;dynamic-code</PackageTags>
+        <PackageTags>code-generation;csharp;python;lisp;dynamic-code;source-generator</PackageTags>
         <PackageReleaseNotes>初始版本发布</PackageReleaseNotes>
         
         <!-- 生成包相关设置 -->
@@ -28,5 +29,11 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
+
+    <ItemGroup>
+        <!-- 包含LICENSE文件到NuGet包中 -->
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 
 </Project>
