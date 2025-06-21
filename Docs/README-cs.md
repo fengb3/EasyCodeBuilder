@@ -36,16 +36,17 @@
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 ```
 
 **生成配置**: 使用 4 个空格缩进，大括号作为块开始和结束符号
 
-
 ### 自定义缩进
 
 **API 调用**:
+
 ```csharp
 // 使用 Tab 缩进
 var builder = CSharpCodeBuilder.WithTabs(1);
@@ -59,7 +60,6 @@ var builder = new CSharpCodeBuilder("\t", 1);
 
 **说明**: 支持多种缩进方式自定义，满足不同编码风格需求
 
-
 ## Using 和 Namespace
 
 ### Using - 导入命名空间
@@ -68,6 +68,7 @@ var builder = new CSharpCodeBuilder("\t", 1);
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Using("System", "System.Collections.Generic", "System.Linq");
@@ -76,7 +77,9 @@ builder.Using("System", "System.Collections.Generic", "System.Linq");
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -87,12 +90,14 @@ using System.Linq;
 </div>
 </div>
 
+
 ### Namespace - 命名空间定义
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Namespace("MyApp.Services", ns =>
@@ -104,7 +109,9 @@ builder.Namespace("MyApp.Services", ns =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 namespace MyApp.Services
 {
@@ -115,6 +122,7 @@ namespace MyApp.Services
 </div>
 </div>
 
+
 ## 类型定义
 
 ### Class - 基础类
@@ -123,6 +131,7 @@ namespace MyApp.Services
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Class("MyClass", cls =>
@@ -134,7 +143,9 @@ builder.Class("MyClass", cls =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public class MyClass
 {
@@ -145,12 +156,14 @@ public class MyClass
 </div>
 </div>
 
+
 ### Class - 带继承和修饰符
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Class("Child", cls =>
@@ -162,7 +175,9 @@ builder.Class("Child", cls =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public sealed class Child : Parent
 {
@@ -173,12 +188,14 @@ public sealed class Child : Parent
 </div>
 </div>
 
+
 ### Interface - 接口定义
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Interface("IService", iface =>
@@ -190,7 +207,9 @@ builder.Interface("IService", iface =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public interface IService
 {
@@ -201,12 +220,14 @@ public interface IService
 </div>
 </div>
 
+
 ### Enum - 枚举定义
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Enum("Status", enm =>
@@ -220,7 +241,9 @@ builder.Enum("Status", enm =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public enum Status
 {
@@ -233,6 +256,7 @@ public enum Status
 </div>
 </div>
 
+
 ## 成员定义
 
 ### Method - 方法定义
@@ -241,6 +265,7 @@ public enum Status
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("Calculate", method =>
@@ -253,7 +278,9 @@ builder.Method("Calculate", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public int Calculate(int a, int b)
 {
@@ -265,12 +292,14 @@ public int Calculate(int a, int b)
 </div>
 </div>
 
+
 ### Property - 属性定义
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Property("string", "Name")
@@ -281,7 +310,9 @@ builder.Property("string", "Name")
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public string Name { get; set; };
 public int Age { get; set; } = 18;
@@ -291,12 +322,14 @@ public bool IsActive { get; private set; };
 </div>
 </div>
 
+
 ### Field - 字段定义
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Field("string", "_name", "private")
@@ -306,7 +339,9 @@ builder.Field("string", "_name", "private")
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 private string _name;
 public const int MaxSize = 100;
@@ -314,6 +349,7 @@ public const int MaxSize = 100;
 
 </div>
 </div>
+
 
 ## 控制结构
 
@@ -323,6 +359,7 @@ public const int MaxSize = 100;
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("CheckNumber", method =>
@@ -345,7 +382,9 @@ builder.Method("CheckNumber", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public void CheckNumber(int x)
 {
@@ -367,12 +406,14 @@ public void CheckNumber(int x)
 </div>
 </div>
 
+
 ### For - 循环
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("PrintNumbers", method =>
@@ -387,7 +428,9 @@ builder.Method("PrintNumbers", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public void PrintNumbers()
 {
@@ -401,12 +444,14 @@ public void PrintNumbers()
 </div>
 </div>
 
+
 ### ForEach - foreach 循环
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("ProcessItems", method =>
@@ -421,7 +466,9 @@ builder.Method("ProcessItems", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public void ProcessItems(IEnumerable<string> items)
 {
@@ -435,12 +482,14 @@ public void ProcessItems(IEnumerable<string> items)
 </div>
 </div>
 
+
 ### While - 循环
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("Countdown", method =>
@@ -457,7 +506,9 @@ builder.Method("Countdown", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public void Countdown()
 {
@@ -473,12 +524,14 @@ public void Countdown()
 </div>
 </div>
 
+
 ### Try/Catch/Finally - 异常处理
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("SafeDivide", method =>
@@ -503,7 +556,9 @@ builder.Method("SafeDivide", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public double SafeDivide(double a, double b)
 {
@@ -527,12 +582,14 @@ public double SafeDivide(double a, double b)
 </div>
 </div>
 
+
 ### CatchAll - 通用异常捕获
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.Method("SafeOperation", method =>
@@ -553,7 +610,9 @@ builder.Method("SafeOperation", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public bool SafeOperation()
 {
@@ -573,6 +632,7 @@ public bool SafeOperation()
 </div>
 </div>
 
+
 ## 基础扩展方法
 
 ### AppendMultiLine - 多行文本添加
@@ -581,6 +641,7 @@ public bool SafeOperation()
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 builder.AppendMultiLine(@"// 这是一个多行注释
@@ -591,7 +652,9 @@ builder.AppendMultiLine(@"// 这是一个多行注释
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 // 这是一个多行注释
 // 第二行注释
@@ -601,12 +664,14 @@ builder.AppendMultiLine(@"// 这是一个多行注释
 </div>
 </div>
 
+
 ### AppendWhen - 条件添加
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 var debug = true;
@@ -620,7 +685,9 @@ builder.Method("Main", method =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public void Main()
 {
@@ -632,12 +699,14 @@ public void Main()
 </div>
 </div>
 
+
 ### AppendBatch - 批量添加
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 var properties = new[] { ("Name", "string"), ("Age", "int"), ("Email", "string") };
@@ -653,7 +722,9 @@ builder.Class("Person", cls =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public class Person
 {
@@ -665,6 +736,7 @@ public class Person
 
 </div>
 </div>
+
 
 ## 代码模板
 
@@ -687,6 +759,7 @@ public class Person
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 
@@ -703,7 +776,7 @@ builder.Namespace("MyApp.Controllers", ns =>
         // 私有字段
         cls.Field("List<Product>", "_products", "private readonly", "new()");
         cls.AppendLine();
-        
+      
         // Get 方法
         cls.Method("Get", method =>
         {
@@ -716,7 +789,7 @@ builder.Namespace("MyApp.Controllers", ns =>
                 elseBody.AppendLine("return NotFound();");
             });
         }, "IActionResult", "public");
-        
+      
         // Post 方法
         cls.Method("Post", method =>
         {
@@ -730,7 +803,7 @@ builder.Namespace("MyApp.Controllers", ns =>
                 catchBody.AppendLine("return BadRequest();");
             });
         }, "IActionResult", "public", "Product product");
-        
+      
     }, "public", "ControllerBase");
 });
 
@@ -740,7 +813,9 @@ Console.WriteLine(builder.ToString());
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -782,6 +857,7 @@ namespace MyApp.Controllers
 </div>
 </div>
 
+
 ## 函数式编程支持
 
 CSharpCodeBuilder 支持函数式编程风格，提供了curried版本的方法，使代码更加简洁和可复用。
@@ -792,6 +868,7 @@ CSharpCodeBuilder 支持函数式编程风格，提供了curried版本的方法�
 <div style="flex: 1;">
 
 **API 调用**:
+
 ```csharp
 var builder = new CSharpCodeBuilder();
 
@@ -810,7 +887,9 @@ createClass(cls =>
 </div>
 <div style="flex: 1;">
 
+
 **生成的代码**:
+
 ```csharp
 public class MyClass
 {
@@ -827,6 +906,9 @@ public class MyClass
 </div>
 </div>
 </div>
+
+
+
 
 ### 支持 Curried 版本的方法
 
@@ -864,7 +946,8 @@ public class MyClass
 ### 🎯 核心语法增强 (计划中)
 
 **高优先级特性 - 日常开发必需**
-- [ ] **构造函数和析构函数支持**
+
+- [X] **构造函数和析构函数支持**
   - `Constructor(string name, string parameters, string modifiers)`
   - `Destructor(string name)`
 - [ ] **特性/属性标注 (Attributes)**
@@ -878,6 +961,7 @@ public class MyClass
   - `GenericMethod<T>(string name, string typeConstraints)`
 
 **属性访问器增强**
+
 - [ ] **高级属性控制**
   - `Property()` 方法支持自定义 getter/setter 实现
   - 支持只读属性、初始化器属性
@@ -888,6 +972,7 @@ public class MyClass
 ### 🚀 现代 C# 特性 (规划中)
 
 **现代 C# 语法支持**
+
 - [ ] **记录类型 (Records) - C# 9+**
   - `Record(string name, string parameters)`
   - `RecordStruct(string name, string parameters)`
@@ -901,6 +986,7 @@ public class MyClass
   - `GlobalUsing(params string[] namespaces)`
 
 **表达式和 LINQ 支持**
+
 - [ ] **Lambda 表达式**
   - `Lambda(string parameters, string body)`
   - `AnonymousMethod(string parameters)`
@@ -911,6 +997,7 @@ public class MyClass
 ### 🏗️ 高级特性 (远期规划)
 
 **面向对象高级特性**
+
 - [ ] **继承和多态**
   - `AbstractClass(string name)` 抽象类支持
   - `VirtualMethod()` 和 `OverrideMethod()` 虚方法支持
@@ -923,6 +1010,7 @@ public class MyClass
   - `YieldReturn()` 和 `YieldBreak()` 支持
 
 **资源管理和并发**
+
 - [ ] **资源管理语句**
   - `UsingStatement(string resource)` using 语句
   - `UsingDeclaration(string type, string variable)` using 声明
@@ -934,6 +1022,7 @@ public class MyClass
 ### 🔧 代码模板扩展 (远期规划)
 
 **丰富的代码模板**
+
 - [ ] **微服务模板**
   - `MicroserviceTemplate()` 完整微服务架构
   - `DockerfileTemplate()` Docker 配置生成
@@ -945,6 +1034,7 @@ public class MyClass
   - `DapperTemplate()` Dapper 查询方法
 
 **代码质量工具**
+
 - [ ] **代码分析器集成**
   - 自动应用代码规范和最佳实践
   - 生成符合 StyleCop 规则的代码
@@ -955,6 +1045,7 @@ public class MyClass
 ### 🎨 持续改进
 
 **性能优化**
+
 - [ ] **内存使用优化**
   - 更高效的字符串构建算法
   - 减少内存分配和 GC 压力
@@ -963,13 +1054,13 @@ public class MyClass
   - 缓存和增量生成
 
 **用户体验**
+
 - [ ] **更好的错误处理**
   - 详细的错误信息和建议
   - 代码验证和语法检查
 - [ ] **文档和示例**
   - 交互式文档和教程
   - 更多实际项目示例
-
 
 ## 注意事项
 

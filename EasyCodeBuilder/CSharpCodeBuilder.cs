@@ -96,6 +96,42 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         return this;
     }
 
+    /// <summary>
+    /// Adds code in batch by iterating through a collection with index access
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the collection</typeparam>
+    /// <param name="items">The collection to iterate through</param>
+    /// <param name="action">The action to execute for each element, receiving the builder, current element, and index as parameters</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Action<CSharpCodeBuilder, T, int> action)
+    {
+        int index = 0;
+        foreach (var item in items)
+        {
+            action(this, item, index);
+            index++;
+        }
+        return this;
+    }
+
+    /// <summary>
+    /// Adds code in batch by iterating through a collection with index access using a function
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the collection</typeparam>
+    /// <param name="items">The collection to iterate through</param>
+    /// <param name="func">The function to execute for each element, receiving the builder, current element, and index as parameters</param>
+    /// <returns>The current builder instance for method chaining</returns>
+    public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Func<CSharpCodeBuilder, T, int, CSharpCodeBuilder> func)
+    {
+        int index = 0;
+        foreach (var item in items)
+        {
+            func(this, item, index);
+            index++;
+        }
+        return this;
+    }
+
     #endregion
 
     #region Using and Namespace

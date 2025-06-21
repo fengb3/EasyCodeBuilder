@@ -135,107 +135,214 @@ public class Program
     }
 
     /// <summary>
-    /// 生成C#代码
+    /// 生成C#代码 - 改进版本
     /// </summary>
     /// <param name="columns">列信息</param>
     /// <param name="dataRows">数据行</param>
     /// <returns>生成的C#代码</returns>
     private static string GenerateCSharpCode(List<ExcelColumnInfo> columns, List<List<object?>> dataRows)
     {
-        var builder = new CSharpCodeBuilder();
+        if (columns == null || columns.Count == 0)
+            throw new ArgumentException("列信息不能为空", nameof(columns));
 
-        // 添加using语句
-        builder.Using("System", "System.Collections.Generic", "System.Linq");
+        if (dataRows == null)
+            throw new ArgumentNullException(nameof(dataRows));
 
-        // 添加命名空间
-        builder.Namespace("GeneratedData", ns =>
-        {
-            // 生成数据模型类
-            ns.Class("DataModel")(MakeDataModel(ns, columns))
-                .AppendLine()
-                .Class("DataProvider", "public static")(cls =>
-                {
-                    MakeFactoryMethod(cls, "DataModel", columns)(cls);
-
-                    cls.Property("List<DataModel>", "_datas", "private static");
-
-
-                    cls.Method("DataProvider", "", "static")(method => method
-                        .AppendLine($"_datas = new List<DataModel>();")
-                        .AppendBatch(dataRows, (b, row) =>
-                        {
-                            // 使用索引同时获取值和对应的列类型
-                            var formattedValues = row.Select((value, index) =>
-                                FormatValue(value, columns[index].Type)).ToArray();
-                            return b << $"_datas.Add(Create({string.Join(", ", formattedValues)}));";
-                        })
-                    );
-
-                    _ = cls
-                        << ""
-                        << ("/// <summary>")
-                        << ("/// 获取硬编码的数据列表")
-                        << ("/// </summary>")
-                        << ("/// <returns>数据列表</returns>");
-
-                    cls.Method("GetData", "List<DataModel>", "public static")(method =>
-                        method << "return _datas;"
-                    );
-
-                    cls.AppendLine();
-
-                    return cls;
-                });
-        });
-
-        return builder.ToString();
-    }
-
-
-    private static Func<CSharpCodeBuilder, CSharpCodeBuilder> MakeDataModel(CSharpCodeBuilder builder,
-        List<ExcelColumnInfo> columns)
-    {
-        return builder => builder.AppendBatch(columns, (builder, column) =>
-            (builder
-             << $"/// <summary>"
-             << $"/// {column.Comment}"
-             << $"/// </summary>")
-            .Property(column.Type, column.Name)
-        );
-    }
-
-    public static Func<CSharpCodeBuilder, CSharpCodeBuilder> MakeFactoryMethod(CSharpCodeBuilder builder,
-        string className, List<ExcelColumnInfo> columns)
-    {
-        return builder =>
-            builder.Method("Create", className, "public static",
-                string.Join(", ", columns.Select(c => $"{c.Type} {c.Name}")))(method =>
-                (method << "var model = new DataModel();")
-                .AppendBatch(columns, (builder, column) =>
-                    (builder << $"model.{column.Name} = {column.Name};")
-                )
-                .AppendLine("return model;")
-            );
+        var codeGenerator = new CSharpDataClassGenerator(columns, dataRows);
+        return codeGenerator.Generate();
     }
 
     /// <summary>
-    /// 格式化值为C#代码
+    /// C# 数据类代码生成器
     /// </summary>
-    /// <param name="value">原始值</param>
-    /// <param name="type">数据类型</param>
-    /// <returns>格式化后的值</returns>
-    private static string FormatValue(object? value, string type)
+    private class CSharpDataClassGenerator
     {
-        if (value == null) return "null";
+        private readonly List<ExcelColumnInfo> _columns;
+        private readonly List<List<object?>> _dataRows;
+        private readonly IValueFormatter _formatter;
 
-        return type.ToLower() switch
+        public CSharpDataClassGenerator(List<ExcelColumnInfo> columns, List<List<object?>> dataRows)
         {
-            "string" => $"\"{value}\"",
-            "int" => value.ToString()!,
-            "double" or "float" => $"{value}",
-            "bool" => value.ToString()!.ToLower(),
-            "datetime" => $"DateTime.Parse(\"{value}\")",
-            _ => $"\"{value}\""
-        };
+            _columns = columns ?? throw new ArgumentNullException(nameof(columns));
+            _dataRows = dataRows ?? throw new ArgumentNullException(nameof(dataRows));
+            _formatter = new CSharpValueFormatter();
+        }
+
+        public string Generate()
+        {
+            var builder = new CSharpCodeBuilder();
+
+            builder.Using("System", "System.Collections.Generic", "System.Linq");
+
+            builder.Namespace("GeneratedData", ns =>
+            {
+                GenerateDataModel(ns);
+                ns.AppendLine();
+                GenerateDataProvider(ns);
+            });
+
+            return builder.ToString();
+        }
+
+        private void GenerateDataModel(CSharpCodeBuilder builder)
+        {
+            builder.Class("DataModel", cls =>
+            {
+                cls.AppendBatch(_columns, (b, column) =>
+                    b.AppendLine($"/// <summary>")
+                     .AppendLine($"/// {column.Comment}")
+                     .AppendLine($"/// </summary>")
+                     .Property(column.Type, column.Name, "public", null, "{ get; set; }")
+                );
+                return cls;
+            });
+        }
+
+        private void GenerateDataProvider(CSharpCodeBuilder builder)
+        {
+            builder.Class("DataProvider", cls =>
+            {
+                // 生成私有静态字段
+                cls.Field("List<DataModel>", "_datas", "private static");
+                cls.AppendLine();
+
+                // 生成静态构造函数
+                GenerateStaticConstructor(cls);
+                cls.AppendLine();
+
+                // 生成工厂方法
+                GenerateCreateMethod(cls);
+                cls.AppendLine();
+
+                // 生成获取数据方法
+                GenerateGetDataMethod(cls);
+
+                return cls;
+            }, "public static");
+        }
+
+        private void GenerateStaticConstructor(CSharpCodeBuilder builder)
+        {
+            builder.Constructor("DataProvider", "", "static")(ctor =>
+                ctor
+                .AppendLine($"_datas = new List<DataModel>({_dataRows.Count});")
+                .AppendBatch(_dataRows, (b, row, idx) => b
+                    .AppendLine($"_datas[{idx}] = Create({string.Join(", ", FormatRowValues(row))});")
+                )
+            
+            );
+        }
+
+        private void GenerateCreateMethod(CSharpCodeBuilder builder)
+        {
+            var parameters = string.Join(", ", _columns.Select(c => $"{c.Type} {c.Name}"));
+
+            builder.AppendLine("/// <summary>")
+                   .AppendLine("/// 创建数据模型实例")
+                   .AppendLine("/// </summary>")
+                   .Method("Create", "DataModel", "public static", parameters)(method =>
+                   {
+                       method.AppendLine("return new DataModel")
+                             .AppendLine("{");
+
+                       method.AppendBatch(_columns, (b, column) =>
+                           b.AppendLine($"    {column.Name} = {column.Name},")
+                       );
+
+                       method.AppendLine("};");
+                       return method;
+                   });
+        }
+
+        private void GenerateGetDataMethod(CSharpCodeBuilder builder)
+        {
+            builder.AppendLine("/// <summary>")
+                   .AppendLine("/// 获取硬编码的数据列表")
+                   .AppendLine("/// </summary>")
+                   .AppendLine("/// <returns>数据列表</returns>")
+                   .Method("GetData", "List<DataModel>", "public static")(method =>
+                       method.AppendLine("return _datas;")
+                   );
+        }
+
+        private string[] FormatRowValues(List<object?> row)
+        {
+            if (row.Count != _columns.Count)
+                throw new InvalidOperationException($"数据行列数({row.Count})与表头列数({_columns.Count})不匹配");
+
+            return row.Select((value, index) => _formatter.Format(value, _columns[index].Type))
+                      .ToArray();
+        }
     }
+
+    /// <summary>
+    /// 值格式化器接口
+    /// </summary>
+    private interface IValueFormatter
+    {
+        string Format(object? value, string type);
+    }
+
+    /// <summary>
+    /// C# 值格式化器 - 改进版本
+    /// </summary>
+    private class CSharpValueFormatter : IValueFormatter
+    {
+        private static readonly Dictionary<string, Func<object?, string>> _formatters = new()
+        {
+            ["string"] = value => value == null ? "null" : $"\"{EscapeString(value.ToString())}\"",
+            ["int"] = value => value?.ToString() ?? "0",
+            ["long"] = value => value == null ? "0L" : $"{value}L",
+            ["double"] = value => value == null ? "0.0" : $"{value}",
+            ["float"] = value => value == null ? "0.0f" : $"{value}f",
+            ["decimal"] = value => value == null ? "0m" : $"{value}m",
+            ["bool"] = value => value?.ToString()?.ToLower() ?? "false",
+            ["datetime"] = value => value == null ? "DateTime.MinValue" : $"DateTime.Parse(\"{value}\")",
+            ["guid"] = value => value == null ? "Guid.Empty" : $"Guid.Parse(\"{value}\")"
+        };
+
+        public string Format(object? value, string type)
+        {
+            if (value == null) return GetDefaultValue(type);
+
+            var lowerType = type.ToLower();
+            if (_formatters.TryGetValue(lowerType, out var formatter))
+            {
+                return formatter(value);
+            }
+
+            // 默认按字符串处理
+            return $"\"{EscapeString(value.ToString())}\"";
+        }
+
+        private static string GetDefaultValue(string type)
+        {
+            return type.ToLower() switch
+            {
+                "string" => "null",
+                "int" => "0",
+                "long" => "0L",
+                "double" => "0.0",
+                "float" => "0.0f",
+                "decimal" => "0m",
+                "bool" => "false",
+                "datetime" => "DateTime.MinValue",
+                "guid" => "Guid.Empty",
+                _ => "null"
+            };
+        }
+
+        private static string EscapeString(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+
+            return input.Replace("\\", "\\\\")
+                       .Replace("\"", "\\\"")
+                       .Replace("\r", "\\r")
+                       .Replace("\n", "\\n")
+                       .Replace("\t", "\\t");
+        }
+    }
+
+
 }
