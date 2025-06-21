@@ -2,6 +2,8 @@
 
 [![NuGet Version](https://img.shields.io/nuget/v/Fengb3.EasyCodeBuilder)](https://www.nuget.org/packages/Fengb3.EasyCodeBuilder/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![CI](https://github.com/fengb3/EasyCodeBuilder/workflows/🔄%20Continuous%20Integration/badge.svg)
+![NuGet](https://github.com/fengb3/EasyCodeBuilder/workflows/🚀%20NuGet%20Package%20CI/CD/badge.svg)
 
 A powerful and flexible library for dynamic code generation, supporting multiple programming languages including C#, Python, and Lisp.
 
