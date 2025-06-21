@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <Nullable>enable</Nullable>
+
+        <RootNamespace>Fengb3.EasyCodeBuilder</RootNamespace>
+        
+        <!-- XML 文档生成 -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        
+        <!-- NuGet 包信息 -->
+        <PackageId>Fengb3.EasyCodeBuilder</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>Bohan Feng</Authors>
+        <Description>A library for dynamic code generation, supporting Multiple Languages</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/fengb3/EasyCodeBuilder</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/fengb3/EasyCodeBuilder</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>code-generation;csharp;python;lisp;dynamic-code</PackageTags>
+        <PackageReleaseNotes>初始版本发布</PackageReleaseNotes>
+        
+        <!-- 生成包相关设置 -->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+</Project>
