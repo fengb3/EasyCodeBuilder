@@ -12,13 +12,11 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
 
     public PythonCodeBuilder() : base(" ", 4, ":", "", 1024)
     {
-        Self = this;
     }
 
     public PythonCodeBuilder(string indentChar, int indentCount, int initialCapacity = 1024)
         : base(indentChar, indentCount, ":", "", initialCapacity)
     {
-        Self = this;
     }
 
     /// <summary>

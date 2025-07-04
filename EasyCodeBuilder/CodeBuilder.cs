@@ -31,7 +31,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
 
     #region 属性和嵌套类
 
-    public T Self {get; set;} = null!;
+    public T Self {get; set;}
 
     public int Depth
     {
@@ -85,6 +85,9 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     public CodeBuilder(string indentChar, int indentCount, string blockStart, string blockEnd, int initialCapacity = 1024)
     {
         _indentChar = indentChar ?? throw new ArgumentNullException(nameof(indentChar));
+        if (string.IsNullOrEmpty(indentChar))
+            throw new ArgumentException("Indent character cannot be empty", nameof(indentChar));
+        
         _indentCount = Math.Max(1, indentCount);
         _blockStart = blockStart ?? "";
         _blockEnd = blockEnd ?? "";
@@ -95,6 +98,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
 
         SB = new StringBuilder(initialCapacity);
         Depth = 0; // 初始化当前缩进
+        Self = (T)this; // 安全初始化 Self 属性
     }
 
     #endregion
@@ -111,7 +115,21 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
         // 为了性能，预先计算常用深度的缩进字符串
         for (int i = 1; i <= MaxCacheDepth; i++)
         {
-            _indentCache[i] = new string(_indentChar[0], i * _indentCount);
+            // 支持多字符缩进（如多个空格或制表符）
+            if (_indentChar.Length == 1)
+            {
+                _indentCache[i] = new string(_indentChar[0], i * _indentCount);
+            }
+            else
+            {
+                // 对于多字符缩进，使用字符串重复
+                var sb = new StringBuilder(i * _indentCount * _indentChar.Length);
+                for (int j = 0; j < i * _indentCount; j++)
+                {
+                    sb.Append(_indentChar);
+                }
+                _indentCache[i] = sb.ToString();
+            }
         }
     }
 
@@ -129,7 +147,20 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
         }
 
         // 超出缓存范围时动态创建
-        return new string(_indentChar[0], depth * _indentCount);
+        if (_indentChar.Length == 1)
+        {
+            return new string(_indentChar[0], depth * _indentCount);
+        }
+        else
+        {
+            // 对于多字符缩进，使用字符串重复
+            var sb = new StringBuilder(depth * _indentCount * _indentChar.Length);
+            for (int i = 0; i < depth * _indentCount; i++)
+            {
+                sb.Append(_indentChar);
+            }
+            return sb.ToString();
+        }
     }
 
     #endregion

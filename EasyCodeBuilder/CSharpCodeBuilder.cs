@@ -15,7 +15,6 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// </summary>
     public CSharpCodeBuilder() : base()
     {
-        Self = this;
     }
 
     /// <summary>
@@ -26,7 +25,6 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <param name="initialCapacity">The initial capacity (default is 1024)</param>
     public CSharpCodeBuilder(string indentChar, int indentCount, int initialCapacity = 1024) : base(indentChar, indentCount, "{", "}", initialCapacity)
     {
-        Self = this;
     }
 
     /// <summary>
@@ -892,36 +890,37 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     }
 
     /// <summary>
-    /// Adds a property definition with a custom block
+    /// Adds a property definition with custom accessor implementation
     /// </summary>
     /// <param name="type">The property type</param>
     /// <param name="name">The property name</param>
-    /// <param name="func">The function to execute for custom property implementation</param>
+    /// <param name="func">The function to execute for custom accessor implementation</param>
     /// <param name="modifiers">The access modifiers (default is public)</param>
     /// <param name="initialValue">The initial value (optional)</param>
-    /// <param name="accessors">The property accessors (default is { get; set; })</param>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder Property(string type, string name, Func<CSharpCodeBuilder, CSharpCodeBuilder> func,
-        string modifiers = "public", string? initialValue = null,
-        string accessors = "{ get; set; }")
+        string modifiers = "public", string? initialValue = null)
     {
-        var prop = BuildPropertyDeclaration(modifiers, type, name, accessors, initialValue);
-        AppendLine(prop);
+        // For custom accessor implementation, we don't use simple accessors
+        var propHeader = string.IsNullOrEmpty(initialValue) 
+            ? $"{modifiers} {type} {name}"
+            : $"{modifiers} {type} {name} = {initialValue}";
+        
+        AppendLine(propHeader);
         CodeBlock(func);
         return this;
     }
 
     /// <summary>
-    /// Adds a property definition (curried version)
+    /// Adds a property definition with custom accessor implementation (curried version)
     /// </summary>
     /// <param name="type">The property type</param>
     /// <param name="name">The property name</param>
     /// <param name="modifiers">The access modifiers (default is public)</param>
     /// <param name="initialValue">The initial value (optional)</param>
-    /// <param name="accessors">The property accessors (default is { get; set; })</param>
     /// <returns>A function that receives a code building operation and returns the builder instance</returns>
-    public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> PropertyBuilder(string type, string name, string modifiers = "public", string? initialValue = null, string accessors = "{ get; set; }")
-        => func => Property(type, name, func, modifiers, initialValue, accessors);
+    public Func<Func<CSharpCodeBuilder, CSharpCodeBuilder>, CSharpCodeBuilder> PropertyBuilder(string type, string name, string modifiers = "public", string? initialValue = null)
+        => func => Property(type, name, func, modifiers, initialValue);
 
     /// <summary>
     /// Adds a field definition
