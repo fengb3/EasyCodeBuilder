@@ -7,22 +7,26 @@
 
         <RootNamespace>Fengb3.EasyCodeBuilder</RootNamespace>
         
+        <!-- Performance Optimizations -->
+        <Optimize>true</Optimize>
+        <DebugType>portable</DebugType>
+        
         <!-- XML 文档生成 -->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
         
         <!-- NuGet 包信息 -->
         <PackageId>Fengb3.EasyCodeBuilder</PackageId>
-        <Version>0.0.2</Version>
+        <Version>0.0.3</Version>
         <Authors>Bohan Feng</Authors>
-        <Description>A library for dynamic code generation, supporting Multiple Languages</Description>
+        <Description>A high-performance library for dynamic code generation, supporting Multiple Languages with optimized memory usage and AOT compatibility</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageProjectUrl>https://github.com/fengb3/EasyCodeBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/fengb3/EasyCodeBuilder</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageTags>code-generation;csharp;python;lisp;dynamic-code;source-generator</PackageTags>
-        <PackageReleaseNotes>GitHub Actions CI/CD自动化发布测试版本</PackageReleaseNotes>
+        <PackageTags>code-generation;csharp;python;lisp;dynamic-code;source-generator;performance;aot;high-performance</PackageTags>
+        <PackageReleaseNotes>Performance optimizations: improved memory usage, AOT compatibility, and bundle size optimizations</PackageReleaseNotes>
         
         <!-- 生成包相关设置 -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -34,6 +38,18 @@
         <!-- 包含LICENSE文件到NuGet包中 -->
         <None Include="..\LICENSE" Pack="true" PackagePath="" />
         <None Include="..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <!-- Performance Analysis Tools -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>

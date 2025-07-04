@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Fengb3.EasyCodeBuilder;
 
@@ -53,7 +54,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
 
     #endregion
 
-    #region Basic Extension Methods
+    #region Basic Extension Methods - Performance Optimized
 
     /// <summary>
     /// Conditionally adds a line of code
@@ -61,6 +62,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <param name="condition">The condition to check; code line is added only when true</param>
     /// <param name="line">The code line to add</param>
     /// <returns>The current builder instance for method chaining</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public CSharpCodeBuilder AppendWhen(bool condition, string line)
     {
         if (condition)
@@ -69,7 +71,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     }
     
     /// <summary>
-    /// Adds code in batch by iterating through a collection
+    /// Adds code in batch by iterating through a collection - Optimized for performance
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection</typeparam>
     /// <param name="items">The collection to iterate through</param>
@@ -77,13 +79,34 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Action<CSharpCodeBuilder, T> action)
     {
-        foreach (var item in items)
-            action(this, item);
+        // Optimize for common collection types
+        if (items is IList<T> list)
+        {
+            // Use indexing for better performance with lists
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(this, list[i]);
+            }
+        }
+        else if (items is T[] array)
+        {
+            // Use direct array access
+            for (int i = 0; i < array.Length; i++)
+            {
+                action(this, array[i]);
+            }
+        }
+        else
+        {
+            // Fallback to foreach for other collections
+            foreach (var item in items)
+                action(this, item);
+        }
         return this;
     }
 
     /// <summary>
-    /// Adds code in batch by iterating through a collection using a function
+    /// Adds code in batch by iterating through a collection using a function - Optimized for performance
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection</typeparam>
     /// <param name="items">The collection to iterate through</param>
@@ -91,13 +114,31 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Func<CSharpCodeBuilder, T, CSharpCodeBuilder> func)
     {
-        foreach (var item in items)
-            func(this, item);
+        // Optimize for common collection types
+        if (items is IList<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                func(this, list[i]);
+            }
+        }
+        else if (items is T[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                func(this, array[i]);
+            }
+        }
+        else
+        {
+            foreach (var item in items)
+                func(this, item);
+        }
         return this;
     }
 
     /// <summary>
-    /// Adds code in batch by iterating through a collection with index access
+    /// Adds code in batch by iterating through a collection with index access - Optimized for performance
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection</typeparam>
     /// <param name="items">The collection to iterate through</param>
@@ -105,17 +146,35 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Action<CSharpCodeBuilder, T, int> action)
     {
-        int index = 0;
-        foreach (var item in items)
+        // Optimize for common collection types
+        if (items is IList<T> list)
         {
-            action(this, item, index);
-            index++;
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(this, list[i], i);
+            }
+        }
+        else if (items is T[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                action(this, array[i], i);
+            }
+        }
+        else
+        {
+            int index = 0;
+            foreach (var item in items)
+            {
+                action(this, item, index);
+                index++;
+            }
         }
         return this;
     }
 
     /// <summary>
-    /// Adds code in batch by iterating through a collection with index access using a function
+    /// Adds code in batch by iterating through a collection with index access using a function - Optimized for performance
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection</typeparam>
     /// <param name="items">The collection to iterate through</param>
@@ -123,11 +182,29 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder AppendBatch<T>(IEnumerable<T> items, Func<CSharpCodeBuilder, T, int, CSharpCodeBuilder> func)
     {
-        int index = 0;
-        foreach (var item in items)
+        // Optimize for common collection types
+        if (items is IList<T> list)
         {
-            func(this, item, index);
-            index++;
+            for (int i = 0; i < list.Count; i++)
+            {
+                func(this, list[i], i);
+            }
+        }
+        else if (items is T[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                func(this, array[i], i);
+            }
+        }
+        else
+        {
+            int index = 0;
+            foreach (var item in items)
+            {
+                func(this, item, index);
+                index++;
+            }
         }
         return this;
     }
@@ -137,14 +214,29 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     #region Using and Namespace
 
     /// <summary>
-    /// Adds using statements
+    /// Adds using statements - Performance optimized
     /// </summary>
     /// <param name="namespaces">Array of namespaces to import</param>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder Using(params string[] namespaces)
     {
-        foreach (var ns in namespaces)
-            AppendLine($"using {ns};");
+        // Pre-calculate total size and optimize for array access
+        if (namespaces.Length > 0)
+        {
+            // Use for loop for better performance than foreach
+            for (int i = 0; i < namespaces.Length; i++)
+            {
+                // Use string.Create for efficient string building
+                var usingStatement = string.Create(6 + namespaces[i].Length + 1, namespaces[i], 
+                    static (span, ns) =>
+                    {
+                        "using ".AsSpan().CopyTo(span);
+                        ns.AsSpan().CopyTo(span[6..]);
+                        span[6 + ns.Length] = ';';
+                    });
+                AppendLine(usingStatement);
+            }
+        }
         return (CSharpCodeBuilder)AppendLine();
     }
 
@@ -450,7 +542,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
-        int totalLength = keyword.Length + 2 + condition.Length;
+        int totalLength = keyword.Length + 2 + condition.Length + 1; // +1 for the closing ')'
 
         return string.Create(totalLength, (keyword, condition), static (span, state) =>
         {

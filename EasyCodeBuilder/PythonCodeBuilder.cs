@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Fengb3.EasyCodeBuilder;
 
@@ -52,12 +53,30 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     }
 
     /// <summary>
-    /// 循环添加
+    /// 循环添加 - 性能优化版本
     /// </summary>
     public PythonCodeBuilder AppendBatch<T>(IEnumerable<T> items, Func<PythonCodeBuilder, T, PythonCodeBuilder> func)
     {
-        foreach (var item in items)
-            func(this, item);
+        // 优化常见集合类型的性能
+        if (items is IList<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                func(this, list[i]);
+            }
+        }
+        else if (items is T[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                func(this, array[i]);
+            }
+        }
+        else
+        {
+            foreach (var item in items)
+                func(this, item);
+        }
         return this;
     }
 
@@ -66,12 +85,22 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     #region Import 和模块
 
     /// <summary>
-    /// 添加 import 语句
+    /// 添加 import 语句 - 性能优化版本
     /// </summary>
     public PythonCodeBuilder Import(params string[] modules)
     {
-        foreach (var module in modules)
-            AppendLine($"import {module}");
+        // 使用for循环优化性能，避免foreach的迭代器开销
+        for (int i = 0; i < modules.Length; i++)
+        {
+            // 使用string.Create减少字符串分配
+            var importStatement = string.Create(7 + modules[i].Length, modules[i],
+                static (span, module) =>
+                {
+                    "import ".AsSpan().CopyTo(span);
+                    module.AsSpan().CopyTo(span[7..]);
+                });
+            AppendLine(importStatement);
+        }
         return this;
     }
 
