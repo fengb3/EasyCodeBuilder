@@ -386,10 +386,11 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <returns>The constructed method signature string</returns>
     private static string BuildMethodSignature(string modifiers, string returnType, string name, string parameters)
     {
-        // modifiers returnType name(parameters)
-        int totalLength = modifiers.Length + 1 + returnType.Length + 1 + name.Length + 1 + parameters.Length + 1;
+        bool hasReturnType = !string.IsNullOrEmpty(returnType);
+        // modifiers [returnType ]name(parameters) - space after returnType only if it exists
+        int totalLength = modifiers.Length + 1 + (hasReturnType ? returnType.Length + 1 : 0) + name.Length + 1 + parameters.Length + 1;
 
-        return string.Create(totalLength, (modifiers, returnType, name, parameters), static (span, state) =>
+        return string.Create(totalLength, (modifiers, returnType, name, parameters, hasReturnType), static (span, state) =>
         {
             int pos = 0;
 
@@ -397,9 +398,12 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
             pos += state.modifiers.Length;
             span[pos++] = ' ';
 
-            state.returnType.AsSpan().CopyTo(span[pos..]);
-            pos += state.returnType.Length;
-            span[pos++] = ' ';
+            if (state.hasReturnType)
+            {
+                state.returnType.AsSpan().CopyTo(span[pos..]);
+                pos += state.returnType.Length;
+                span[pos++] = ' ';
+            }
 
             state.name.AsSpan().CopyTo(span[pos..]);
             pos += state.name.Length;
@@ -450,7 +454,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
-        int totalLength = keyword.Length + 2 + condition.Length;
+        int totalLength = keyword.Length + 3 + condition.Length; // keyword + ' ' + '(' + condition + ')'
 
         return string.Create(totalLength, (keyword, condition), static (span, state) =>
         {
