@@ -13,7 +13,7 @@
         
         <!-- NuGet 包信息 -->
         <PackageId>Fengb3.EasyCodeBuilder</PackageId>
-        <Version>0.0.3</Version>
+        <Version>0.0.4</Version>
         <Authors>Bohan Feng</Authors>
         <Description>A library for dynamic code generation, supporting Multiple Languages</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
