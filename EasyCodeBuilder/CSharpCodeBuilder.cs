@@ -527,7 +527,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
-        int totalLength = keyword.Length + 2 + condition.Length;
+        int totalLength = keyword.Length + 3 + condition.Length; // keyword + ' ' + '(' + condition + ')'
 
         return string.Create(
             totalLength,
