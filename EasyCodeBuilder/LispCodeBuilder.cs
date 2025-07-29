@@ -51,7 +51,7 @@ public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
         }
         else
         {
-            CodeBlock(expression, cb => action((LispCodeBuilder)cb));
+            CodeBlock(cb => action(cb), expression);
         }
         return this;
     }
@@ -92,7 +92,7 @@ public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
                                      params string[] parameters)
     {
         var paramList = parameters.Length > 0 ? $"({string.Join(" ", parameters)})" : "()";
-        CodeBlock($"defun {name} {paramList}", cb => action((LispCodeBuilder)cb));
+        CodeBlock(action, $"defun {name} {paramList}");
         return this;
     }
     
@@ -102,7 +102,7 @@ public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
     public LispCodeBuilder Lambda(Action<LispCodeBuilder> action, params string[] parameters)
     {
         var paramList = parameters.Length > 0 ? $"({string.Join(" ", parameters)})" : "()";
-        CodeBlock($"lambda {paramList}", cb => action((LispCodeBuilder)cb));
+        CodeBlock(action, $"lambda {paramList}");
         return this;
     }
 
@@ -115,10 +115,10 @@ public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
     /// </summary>
     public LispCodeBuilder If(string condition, string thenExpr, string? elseExpr = null)
     {
-        if (elseExpr == null)
-            AppendLine($"(if {condition} {thenExpr})");
-        else
-            AppendLine($"(if {condition} {thenExpr} {elseExpr})");
+        AppendLine(
+            elseExpr == null ? 
+                $"(if {condition} {thenExpr})" : 
+                $"(if {condition} {thenExpr} {elseExpr})");
         return this;
     }
     
@@ -127,7 +127,7 @@ public class LispCodeBuilder : CodeBuilder<LispCodeBuilder>
     /// </summary>
     public LispCodeBuilder Cond(Action<LispCodeBuilder> action)
     {
-        CodeBlock("cond", cb => action((LispCodeBuilder)cb));
+        CodeBlock(action, "cond");
         return this;
     }
 

@@ -116,7 +116,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         Action<CSharpCodeBuilder, T, int> action
     )
     {
-        int index = 0;
+        var index = 0;
         foreach (var item in items)
         {
             action(this, item, index);
@@ -137,7 +137,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         Func<CSharpCodeBuilder, T, int, CSharpCodeBuilder> func
     )
     {
-        int index = 0;
+        var index = 0;
         foreach (var item in items)
         {
             func(this, item, index);
@@ -221,14 +221,14 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(baseTypes))
         {
             // 简单情况：modifiers typeKind name
-            int totalLength = modifiers.Length + 1 + typeKind.Length + 1 + name.Length;
+            var totalLength = modifiers.Length + 1 + typeKind.Length + 1 + name.Length;
 
             return string.Create(
                 totalLength,
                 (modifiers, typeKind, name),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -244,7 +244,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         else
         {
             // 复杂情况：modifiers typeKind name : baseTypes
-            int totalLength =
+            var totalLength =
                 modifiers.Length + 1 + typeKind.Length + 1 + name.Length + 3 + baseTypes.Length;
 
             return string.Create(
@@ -252,7 +252,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
                 (modifiers, typeKind, name, baseTypes),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -293,7 +293,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(initialValue))
         {
             // 简单情况：modifiers type name accessors;
-            int totalLength =
+            var totalLength =
                 modifiers.Length + 1 + type.Length + 1 + name.Length + 1 + accessors.Length; //+ 1;
 
             return string.Create(
@@ -301,7 +301,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
                 (modifiers, type, name, accessors),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -323,7 +323,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         else
         {
             // 复杂情况：modifiers type name accessors = initialValue;
-            int totalLength =
+            var totalLength =
                 modifiers.Length
                 + 1
                 + type.Length
@@ -340,7 +340,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
                 (modifiers, type, name, accessors, initialValue),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -385,14 +385,14 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(initialValue))
         {
             // 简单情况：modifiers type name;
-            int totalLength = modifiers.Length + 1 + type.Length + 1 + name.Length + 1;
+            var totalLength = modifiers.Length + 1 + type.Length + 1 + name.Length + 1;
 
             return string.Create(
                 totalLength,
                 (modifiers, type, name),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -410,7 +410,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         else
         {
             // 复杂情况：modifiers type name = initialValue;
-            int totalLength =
+            var totalLength =
                 modifiers.Length + 1 + type.Length + 1 + name.Length + 3 + initialValue.Length + 1;
 
             return string.Create(
@@ -418,7 +418,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
                 (modifiers, type, name, initialValue),
                 static (span, state) =>
                 {
-                    int pos = 0;
+                    var pos = 0;
                     state.modifiers.AsSpan().CopyTo(span[pos..]);
                     pos += state.modifiers.Length;
                     span[pos++] = ' ';
@@ -457,7 +457,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     )
     {
         // modifiers returnType name(parameters)
-        int totalLength =
+        var totalLength =
             modifiers.Length + 1 + returnType.Length + 1 + name.Length + 1 + parameters.Length + 1;
 
         return string.Create(
@@ -465,7 +465,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
             (modifiers, returnType, name, parameters),
             static (span, state) =>
             {
-                int pos = 0;
+                var pos = 0;
 
                 state.modifiers.AsSpan().CopyTo(span[pos..]);
                 pos += state.modifiers.Length;
@@ -527,14 +527,14 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
-        int totalLength = keyword.Length + 3 + condition.Length; // keyword + ' ' + '(' + condition + ')'
+        var totalLength = keyword.Length + 3 + condition.Length; // keyword + ' ' + '(' + condition + ')'
 
         return string.Create(
             totalLength,
             (keyword, condition),
             static (span, state) =>
             {
-                int pos = 0;
+                var pos = 0;
                 state.keyword.AsSpan().CopyTo(span[pos..]);
                 pos += state.keyword.Length;
                 span[pos++] = ' ';
@@ -556,14 +556,14 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildForStatement(string init, string condition, string increment)
     {
         // for (init; condition; increment)
-        int totalLength = 5 + init.Length + 2 + condition.Length + 2 + increment.Length + 1;
+        var totalLength = 5 + init.Length + 2 + condition.Length + 2 + increment.Length + 1;
 
         return string.Create(
             totalLength,
             (init, condition, increment),
             static (span, state) =>
             {
-                int pos = 0;
+                var pos = 0;
                 "for (".AsSpan().CopyTo(span[pos..]);
                 pos += 5;
 
@@ -597,14 +597,14 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildForeachStatement(string type, string variable, string collection)
     {
         // foreach (type variable in collection)
-        int totalLength = 9 + type.Length + 1 + variable.Length + 4 + collection.Length + 1;
+        var totalLength = 9 + type.Length + 1 + variable.Length + 4 + collection.Length + 1;
 
         return string.Create(
             totalLength,
             (type, variable, collection),
             static (span, state) =>
             {
-                int pos = 0;
+                var pos = 0;
                 "foreach (".AsSpan().CopyTo(span[pos..]);
                 pos += 9;
 

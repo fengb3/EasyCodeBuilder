@@ -101,7 +101,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
         if (!string.IsNullOrEmpty(returnType))
             funcDeclaration += $" -> {returnType}";
 
-        CodeBlock(funcDeclaration, func);
+        CodeBlock(func, funcDeclaration);
         return this;
     }
 
@@ -119,7 +119,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
         if (!string.IsNullOrEmpty(baseClass))
             classDeclaration += $"({baseClass})";
 
-        CodeBlock(classDeclaration, func);
+        CodeBlock(func, classDeclaration);
         return this;
     }
 
@@ -163,7 +163,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     /// </summary>
     public PythonCodeBuilder If(string condition, Func<PythonCodeBuilder, PythonCodeBuilder> func)
     {
-        CodeBlock($"if {condition}", func);
+        CodeBlock(func, $"if {condition}");
         return this;
     }
 
@@ -172,7 +172,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     /// </summary>
     public PythonCodeBuilder Elif(string condition, Func<PythonCodeBuilder, PythonCodeBuilder> func)
     {
-        CodeBlock($"elif {condition}", func);
+        CodeBlock(func, $"elif {condition}");
         return this;
     }
 
@@ -181,7 +181,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     /// </summary>
     public PythonCodeBuilder Else(Func<PythonCodeBuilder, PythonCodeBuilder> func)
     {
-        CodeBlock("else", func);
+        CodeBlock(func, "else");
         return this;
     }
 
@@ -190,7 +190,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     /// </summary>
     public PythonCodeBuilder For(string variable, string iterable, Func<PythonCodeBuilder, PythonCodeBuilder> func)
     {
-        CodeBlock($"for {variable} in {iterable}", func);
+        CodeBlock(func, $"for {variable} in {iterable}");
         return this;
     }
 
@@ -199,7 +199,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
     /// </summary>
     public PythonCodeBuilder While(string condition, Func<PythonCodeBuilder, PythonCodeBuilder> func)
     {
-        CodeBlock($"while {condition}", func);
+        CodeBlock(func, $"while {condition}");
         return this;
     }
 
@@ -210,12 +210,12 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
                                      string exceptionType = "Exception", string exceptionVar = "e",
                                      Func<PythonCodeBuilder, PythonCodeBuilder>? exceptfunc = null)
     {
-        CodeBlock("try", cb => tryfunc((PythonCodeBuilder)cb));
+        CodeBlock(cb => tryfunc((PythonCodeBuilder)cb), "try");
 
         if (exceptfunc != null)
-            CodeBlock($"except {exceptionType} as {exceptionVar}", cb => exceptfunc((PythonCodeBuilder)cb));
+            CodeBlock(cb => exceptfunc((PythonCodeBuilder)cb), $"except {exceptionType} as {exceptionVar}");
         else
-            CodeBlock($"except {exceptionType} as {exceptionVar}", cb => cb.AppendLine("pass"));
+            CodeBlock(cb => cb.AppendLine("pass"), $"except {exceptionType} as {exceptionVar}");
 
         return this;
     }
@@ -229,7 +229,7 @@ public class PythonCodeBuilder : CodeBuilder<PythonCodeBuilder>
         if (!string.IsNullOrEmpty(asVar))
             withStatement += $" as {asVar}";
 
-        CodeBlock(withStatement, func);
+        CodeBlock(func, withStatement);
         return this;
     }
 

@@ -22,7 +22,7 @@ public abstract class CodeBuilder<T>
     private readonly string[] _indentCache;
 
     // 最大支持的缓存深度
-    private const int MaxCacheDepth = 20;
+    private const int MaxCacheDepth = 10;
 
     // 当前缩进相关字段
     private string _currentIndent = "";
@@ -72,7 +72,9 @@ public abstract class CodeBuilder<T>
     /// 默认构造函数 - 使用2个空格缩进和C#风格大括号
     /// </summary>
     public CodeBuilder()
-        : this(" ", 2, "{", "}", 1024) { }
+        : this(" ", 2, "{", "}", 1024)
+    {
+    }
 
     /// <summary>
     /// 完全配置的构造函数
@@ -143,6 +145,11 @@ public abstract class CodeBuilder<T>
 
     #region 核心方法
 
+    /// <summary>
+    /// 添加文本
+    /// </summary>
+    /// <param name="text">文本</param>
+    /// <returns>当前构建器实例</returns>
     public T Append(string text)
     {
         SB.Append(text);
@@ -152,7 +159,10 @@ public abstract class CodeBuilder<T>
     /// <summary>
     /// 添加一行或多行代码（自动处理缩进）
     /// </summary>
-    public T AppendLine(string text = "")
+    /// <param name="text">文本 (支持以 \n 为分隔符的多行文本)</param>
+    /// <param name="lineSpliter"></param>
+    /// <returns>当前构建器实例</returns>
+    public T AppendLine(string text = "", char lineSpliter = '\n')
     {
         // 特殊处理空行，避免不必要的字符串操作
         if (string.IsNullOrEmpty(text))
@@ -168,36 +178,51 @@ public abstract class CodeBuilder<T>
 
         for (int i = 0; i < span.Length; i++)
         {
-            if (span[i] == '\n')
+            if (span[i] != '\n') continue;
+
+            // 找到换行符，处理当前行
+            ReadOnlySpan<char> line = span[start..i];
+
+            // 移除行末的 \r（如果存在）
+            if (line.Length > 0 && line[^1] == '\r')
             {
-                // 找到换行符，处理当前行
-                ReadOnlySpan<char> line = span.Slice(start, i - start);
-
-                // 移除行末的 \r（如果存在）
-                if (line.Length > 0 && line[line.Length - 1] == '\r')
-                {
-                    line = line.Slice(0, line.Length - 1);
-                }
-
-                AppendSingleLine(line);
-                start = i + 1;
+                line = line[..^1];
             }
+
+            AppendSingleLine(line);
+            start = i + 1;
         }
 
         // 处理最后一行（如果没有以换行符结尾）
         if (start < span.Length)
         {
-            ReadOnlySpan<char> lastLine = span.Slice(start);
+            ReadOnlySpan<char> lastLine = span[start..];
             AppendSingleLine(lastLine);
         }
-        else if (start == span.Length && span.Length > 0 && span[span.Length - 1] == '\n')
+        else if (start == span.Length && span.Length > 0 && span[^1] == '\n')
         {
             // 如果字符串以换行符结尾，添加一个空行
-            AppendSingleLine(ReadOnlySpan<char>.Empty);
+            AppendSingleLine([]);
         }
 
         return Self;
     }
+
+    /// <summary>
+    /// 添加多行代码
+    /// </summary>
+    /// <param name="lines">多行代码</param>
+    /// <returns>当前构建器实例</returns>
+    public T AppendLines(params string[] lines)
+    {
+        foreach (var line in lines)
+        {
+            AppendLine(line);
+        }
+
+        return Self;
+    }
+
 
     /// <summary>
     /// 添加单行代码（内部辅助方法）
@@ -222,31 +247,33 @@ public abstract class CodeBuilder<T>
         }
     }
 
-    /// <summary>
-    /// 添加代码块（使用配置的代码块符号）
-    /// </summary>
-    public T CodeBlock(Func<T, T> func)
-    {
-        // 将调用重定向到带前缀的版本，prefix 传递 null
-        return CodeBlock(null, func);
-    }
+    // /// <summary>
+    // /// 添加代码块（使用配置的代码块符号）
+    // /// </summary>
+    // public T CodeBlock(Func<T, T> func)
+    // {
+    //     // 将调用重定向到带前缀的版本，prefix 传递 null
+    //     return CodeBlock(func, null);
+    // }
+    //
+    // /// <summary>
+    // /// 
+    // /// </summary>
+    // /// <param name="action"></param>
+    // /// <returns></returns>
+    // public T CodeBlock(Action<T> action)
+    // {
+    //     return CodeBlock((cb) =>
+    //         {
+    //             action(cb);
+    //             return cb;
+    //         }, null);
+    // }
 
-    public T CodeBlock(Action<T> action)
-    {
-        return CodeBlock(
-            null,
-            (cb) =>
-            {
-                action(cb);
-                return cb;
-            }
-        );
-    }
-
     /// <summary>
-    /// 添加带前缀的代码块（如 if 语句等）
+    /// 添加代码块
     /// </summary>
-    protected T CodeBlock(string? prefix, Func<T, T> action)
+    protected T CodeBlock(Func<T, T> action, string? prefix = null)
     {
         string header;
         if (prefix is null)
@@ -278,63 +305,35 @@ public abstract class CodeBuilder<T>
         return Self;
     }
 
-    protected T CodeBlock(string? prefix, Action<T> action)
+    /// <summary>
+    /// 添加代码块
+    /// </summary>
+    protected T CodeBlock(Action<T> action, string? prefix = null)
     {
         return CodeBlock(
-            prefix,
-            (cb) =>
+            cb =>
             {
                 action(cb);
                 return cb;
-            }
-        );
+            }, prefix);
     }
 
-    // /// <summary>
-    // /// 添加带前缀的代码块（泛型版本，支持子类直接调用）
-    // /// </summary>
-    // /// <typeparam name="T">构建器类型</typeparam>
-    // /// <param name="prefix">代码块前缀</param>
-    // /// <param name="action">在代码块内执行的操作</param>
-    // /// <returns>当前构建器实例</returns>
-    // protected T CodeBlock<T>(string? prefix, Action<T> action) where T : EasyCodeBuilder
-    // {
-    //     string header;
-    //     if (prefix is null)
-    //     {
-    //         // 无前缀版本：仅使用块开始符号
-    //         header = _blockStart;
-    //     }
-    //     else
-    //     {
-    //         // 有前缀版本：组合前缀和块开始符号
-    //         header = prefix + _blockStart;
-    //     }
-
-    //     if (!string.IsNullOrEmpty(header))
-    //     {
-    //         AppendLine(header);
-    //     }
-
-    //     using (Indent)
-    //     {
-    //         action((T)this);
-    //     }
-
-    //     if (!string.IsNullOrEmpty(_blockEnd))
-    //     {
-    //         AppendLine(_blockEnd);
-    //     }
-
-    //     return (T)this;
-    // }
-
+    /// <summary>
+    /// 字符串啦
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() => SB.ToString();
 
     #endregion
 
     #region 重载运算符
 
+    /// <summary>
+    /// 重载运算符 +, 调用 AppendLine 方法
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static T operator +(CodeBuilder<T> builder, string text)
     {
         return builder.AppendLine(text);
