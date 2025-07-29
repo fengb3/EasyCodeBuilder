@@ -936,6 +936,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     /// <param name="func">The code building action to execute within the constructor</param>
     /// <param name="parameters">The parameter list (default is empty)</param>
     /// <param name="modifiers">The access modifiers (default is public)</param>
+    /// <param name="baseClass">The base</param>
     /// <returns>The current builder instance for method chaining</returns>
     public CSharpCodeBuilder Constructor(
         string name,
@@ -945,7 +946,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         string? baseClass = null
     )
     {
-        var constructorSignature = BuildMethodSignature(modifiers, "", name, parameters);
+        var constructorSignature = $"{modifiers} {name}({parameters})";// BuildMethodSignature(modifiers, "", name, parameters);
         AppendLine(constructorSignature + (baseClass != null ? $" : base({baseClass})" : ""));
         CodeBlock(func);
         return this;

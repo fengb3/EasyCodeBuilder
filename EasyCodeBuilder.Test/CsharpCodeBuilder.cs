@@ -1010,7 +1010,7 @@ public class CSharpCodeBuilderTests
                     .Field("string", "_name", "private")
                     .Property("string", "Name", "public", null, "{ get; private set; }")
                     .Constructor("MyClass", ctor => ctor
-                        .AppendLine("_name = string.Empty;"), "string name")
+                        .AppendLine("_name = string.Empty;"), parameters: "string name")
                     .Method("DoWork", method => method
                         .If("_name != null", ifBlock => ifBlock
                             .AppendLine("Console.WriteLine(_name);"))
