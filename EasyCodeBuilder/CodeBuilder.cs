@@ -6,7 +6,8 @@ namespace Fengb3.EasyCodeBuilder;
 /// <summary>
 /// 代码构建器核心类 - 支持可配置的缩进方式和代码块符号
 /// </summary>
-public abstract class CodeBuilder<T> where T : CodeBuilder<T>
+public abstract class CodeBuilder<T>
+    where T : CodeBuilder<T>
 {
     #region 缩进配置和缓存
 
@@ -31,7 +32,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
 
     #region 属性和嵌套类
 
-    public T Self {get; set;} = null!;
+    public T Self { get; set; } = null!;
 
     public int Depth
     {
@@ -63,16 +64,15 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
 
     #endregion
 
-    #region 构造函数    
+    #region 构造函数
 
     private readonly StringBuilder SB;
 
     /// <summary>
     /// 默认构造函数 - 使用2个空格缩进和C#风格大括号
     /// </summary>
-    public CodeBuilder() : this(" ", 2, "{", "}", 1024)
-    {
-    }
+    public CodeBuilder()
+        : this(" ", 2, "{", "}", 1024) { }
 
     /// <summary>
     /// 完全配置的构造函数
@@ -82,7 +82,13 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     /// <param name="blockStart">代码块开始符号</param>
     /// <param name="blockEnd">代码块结束符号</param>
     /// <param name="initialCapacity">初始容量</param>
-    public CodeBuilder(string indentChar, int indentCount, string blockStart, string blockEnd, int initialCapacity = 1024)
+    public CodeBuilder(
+        string indentChar,
+        int indentCount,
+        string blockStart,
+        string blockEnd,
+        int initialCapacity = 1024
+    )
     {
         _indentChar = indentChar ?? throw new ArgumentNullException(nameof(indentChar));
         _indentCount = Math.Max(1, indentCount);
@@ -120,7 +126,8 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     /// </summary>
     private string GetIndentString(int depth)
     {
-        if (depth == 0) return "";
+        if (depth == 0)
+            return "";
 
         // 使用缓存（大部分情况）
         if (depth <= MaxCacheDepth)
@@ -157,27 +164,26 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
         // 使用 Span 高效处理多行字符串
         ReadOnlySpan<char> span = text.AsSpan();
 
-
         int start = 0;
-        
+
         for (int i = 0; i < span.Length; i++)
         {
             if (span[i] == '\n')
             {
                 // 找到换行符，处理当前行
                 ReadOnlySpan<char> line = span.Slice(start, i - start);
-                
+
                 // 移除行末的 \r（如果存在）
                 if (line.Length > 0 && line[line.Length - 1] == '\r')
                 {
                     line = line.Slice(0, line.Length - 1);
                 }
-                
+
                 AppendSingleLine(line);
                 start = i + 1;
             }
         }
-        
+
         // 处理最后一行（如果没有以换行符结尾）
         if (start < span.Length)
         {
@@ -219,31 +225,23 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     /// <summary>
     /// 添加代码块（使用配置的代码块符号）
     /// </summary>
-    protected T CodeBlock(Func<T, T> func)
+    public T CodeBlock(Func<T, T> func)
     {
         // 将调用重定向到带前缀的版本，prefix 传递 null
         return CodeBlock(null, func);
     }
 
-    protected T CodeBlock(Action<T> action)
+    public T CodeBlock(Action<T> action)
     {
-        return CodeBlock(null, (cb) =>
-        {
-            action(cb);
-            return cb;
-        });
+        return CodeBlock(
+            null,
+            (cb) =>
+            {
+                action(cb);
+                return cb;
+            }
+        );
     }
-
-    // /// <summary>
-    // /// 添加代码块（泛型版本，支持子类直接调用）
-    // /// </summary>
-    // /// <typeparam name="T">构建器类型</typeparam>
-    // /// <param name="action">在代码块内执行的操作</param>
-    // /// <returns>当前构建器实例</returns>
-    // protected T CodeBlock<T>(Action<T> action) where T : EasyCodeBuilder
-    // {
-    //     return CodeBlock<T>(null, action);
-    // }
 
     /// <summary>
     /// 添加带前缀的代码块（如 if 语句等）
@@ -280,13 +278,16 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
         return Self;
     }
 
-    protected T CodeBlock(string? prefix, Action<T> action)	
+    protected T CodeBlock(string? prefix, Action<T> action)
     {
-        return CodeBlock(prefix, (cb) =>
-        {
-            action(cb);
-            return cb;
-        });
+        return CodeBlock(
+            prefix,
+            (cb) =>
+            {
+                action(cb);
+                return cb;
+            }
+        );
     }
 
     // /// <summary>
@@ -343,7 +344,7 @@ public abstract class CodeBuilder<T> where T : CodeBuilder<T>
     /// 重载 运算符，调用 AppendLine 方法
     /// </summary>
     public static T operator <<(CodeBuilder<T> builder, string text)
-    {   
+    {
         return builder.AppendLine(text);
     }
 
