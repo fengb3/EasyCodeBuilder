@@ -171,22 +171,20 @@ public abstract class CodeBuilder<T>
             return Self;
         }
 
-        // 使用 Span 高效处理多行字符串
-        ReadOnlySpan<char> span = text.AsSpan();
-
+        // 使用传统字符串处理多行字符串
         int start = 0;
 
-        for (int i = 0; i < span.Length; i++)
+        for (int i = 0; i < text.Length; i++)
         {
-            if (span[i] != '\n') continue;
+            if (text[i] != '\n') continue;
 
             // 找到换行符，处理当前行
-            ReadOnlySpan<char> line = span[start..i];
+            string line = text.Substring(start, i - start);
 
             // 移除行末的 \r（如果存在）
-            if (line.Length > 0 && line[^1] == '\r')
+            if (line.Length > 0 && line[line.Length - 1] == '\r')
             {
-                line = line[..^1];
+                line = line.Substring(0, line.Length - 1);
             }
 
             AppendSingleLine(line);
@@ -194,15 +192,15 @@ public abstract class CodeBuilder<T>
         }
 
         // 处理最后一行（如果没有以换行符结尾）
-        if (start < span.Length)
+        if (start < text.Length)
         {
-            ReadOnlySpan<char> lastLine = span[start..];
+            string lastLine = text.Substring(start);
             AppendSingleLine(lastLine);
         }
-        else if (start == span.Length && span.Length > 0 && span[^1] == '\n')
+        else if (start == text.Length && text.Length > 0 && text[text.Length - 1] == '\n')
         {
             // 如果字符串以换行符结尾，添加一个空行
-            AppendSingleLine([]);
+            AppendSingleLine(string.Empty);
         }
 
         return Self;
@@ -227,10 +225,10 @@ public abstract class CodeBuilder<T>
     /// <summary>
     /// 添加单行代码（内部辅助方法）
     /// </summary>
-    private void AppendSingleLine(ReadOnlySpan<char> line)
+    private void AppendSingleLine(string line)
     {
         // 特殊处理空行
-        if (line.IsEmpty)
+        if (string.IsNullOrEmpty(line))
         {
             SB.AppendLine();
             return;
