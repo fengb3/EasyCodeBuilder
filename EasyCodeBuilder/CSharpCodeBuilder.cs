@@ -217,59 +217,16 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         string? baseTypes = null
     )
     {
-        // 使用 stackalloc 进行高效字符串拼接
+        // 使用字符串拼接进行高效字符串拼接
         if (string.IsNullOrEmpty(baseTypes))
         {
             // 简单情况：modifiers typeKind name
-            var totalLength = modifiers.Length + 1 + typeKind.Length + 1 + name.Length;
-
-            return string.Create(
-                totalLength,
-                (modifiers, typeKind, name),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.typeKind.AsSpan().CopyTo(span[pos..]);
-                    pos += state.typeKind.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                }
-            );
+            return string.Concat(modifiers, " ", typeKind, " ", name);
         }
         else
         {
             // 复杂情况：modifiers typeKind name : baseTypes
-            var totalLength =
-                modifiers.Length + 1 + typeKind.Length + 1 + name.Length + 3 + baseTypes.Length;
-
-            return string.Create(
-                totalLength,
-                (modifiers, typeKind, name, baseTypes),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.typeKind.AsSpan().CopyTo(span[pos..]);
-                    pos += state.typeKind.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                    pos += state.name.Length;
-
-                    " : ".AsSpan().CopyTo(span[pos..]);
-                    pos += 3;
-
-                    state.baseTypes.AsSpan().CopyTo(span[pos..]);
-                }
-            );
+            return string.Concat(modifiers, " ", typeKind, " ", name, " : ", baseTypes);
         }
     }
 
@@ -293,77 +250,12 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(initialValue))
         {
             // 简单情况：modifiers type name accessors;
-            var totalLength =
-                modifiers.Length + 1 + type.Length + 1 + name.Length + 1 + accessors.Length; //+ 1;
-
-            return string.Create(
-                totalLength,
-                (modifiers, type, name, accessors),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.type.AsSpan().CopyTo(span[pos..]);
-                    pos += state.type.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                    pos += state.name.Length;
-                    span[pos++] = ' ';
-
-                    state.accessors.AsSpan().CopyTo(span[pos..]);
-                    pos += state.accessors.Length;
-                    // span[pos] = ';';
-                }
-            );
+            return string.Concat(modifiers, " ", type, " ", name, " ", accessors);
         }
         else
         {
             // 复杂情况：modifiers type name accessors = initialValue;
-            var totalLength =
-                modifiers.Length
-                + 1
-                + type.Length
-                + 1
-                + name.Length
-                + 1
-                + accessors.Length
-                + 3
-                + initialValue.Length
-                + 1;
-
-            return string.Create(
-                totalLength,
-                (modifiers, type, name, accessors, initialValue),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.type.AsSpan().CopyTo(span[pos..]);
-                    pos += state.type.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                    pos += state.name.Length;
-                    span[pos++] = ' ';
-
-                    state.accessors.AsSpan().CopyTo(span[pos..]);
-                    pos += state.accessors.Length;
-
-                    " = ".AsSpan().CopyTo(span[pos..]);
-                    pos += 3;
-
-                    state.initialValue.AsSpan().CopyTo(span[pos..]);
-                    pos += state.initialValue.Length;
-                    span[pos] = ';';
-                }
-            );
+            return string.Concat(modifiers, " ", type, " ", name, " ", accessors, " = ", initialValue, ";");
         }
     }
 
@@ -385,59 +277,12 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
         if (string.IsNullOrEmpty(initialValue))
         {
             // 简单情况：modifiers type name;
-            var totalLength = modifiers.Length + 1 + type.Length + 1 + name.Length + 1;
-
-            return string.Create(
-                totalLength,
-                (modifiers, type, name),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.type.AsSpan().CopyTo(span[pos..]);
-                    pos += state.type.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                    pos += state.name.Length;
-                    span[pos] = ';';
-                }
-            );
+            return string.Concat(modifiers, " ", type, " ", name, ";");
         }
         else
         {
             // 复杂情况：modifiers type name = initialValue;
-            var totalLength =
-                modifiers.Length + 1 + type.Length + 1 + name.Length + 3 + initialValue.Length + 1;
-
-            return string.Create(
-                totalLength,
-                (modifiers, type, name, initialValue),
-                static (span, state) =>
-                {
-                    var pos = 0;
-                    state.modifiers.AsSpan().CopyTo(span[pos..]);
-                    pos += state.modifiers.Length;
-                    span[pos++] = ' ';
-
-                    state.type.AsSpan().CopyTo(span[pos..]);
-                    pos += state.type.Length;
-                    span[pos++] = ' ';
-
-                    state.name.AsSpan().CopyTo(span[pos..]);
-                    pos += state.name.Length;
-
-                    " = ".AsSpan().CopyTo(span[pos..]);
-                    pos += 3;
-
-                    state.initialValue.AsSpan().CopyTo(span[pos..]);
-                    pos += state.initialValue.Length;
-                    span[pos] = ';';
-                }
-            );
+            return string.Concat(modifiers, " ", type, " ", name, " = ", initialValue, ";");
         }
     }
 
@@ -457,33 +302,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     )
     {
         // modifiers returnType name(parameters)
-        var totalLength =
-            modifiers.Length + 1 + returnType.Length + 1 + name.Length + 1 + parameters.Length + 1;
-
-        return string.Create(
-            totalLength,
-            (modifiers, returnType, name, parameters),
-            static (span, state) =>
-            {
-                var pos = 0;
-
-                state.modifiers.AsSpan().CopyTo(span[pos..]);
-                pos += state.modifiers.Length;
-                span[pos++] = ' ';
-
-                state.returnType.AsSpan().CopyTo(span[pos..]);
-                pos += state.returnType.Length;
-                span[pos++] = ' ';
-
-                state.name.AsSpan().CopyTo(span[pos..]);
-                pos += state.name.Length;
-                span[pos++] = '(';
-
-                state.parameters.AsSpan().CopyTo(span[pos..]);
-                pos += state.parameters.Length;
-                span[pos] = ')';
-            }
-        );
+        return string.Concat(modifiers, " ", returnType, " ", name, "(", parameters, ")");
     }
 
     /// <summary>
@@ -527,23 +346,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildParameterizedStatement(string keyword, string condition)
     {
         // keyword (condition)
-        var totalLength = keyword.Length + 3 + condition.Length; // keyword + ' ' + '(' + condition + ')'
-
-        return string.Create(
-            totalLength,
-            (keyword, condition),
-            static (span, state) =>
-            {
-                var pos = 0;
-                state.keyword.AsSpan().CopyTo(span[pos..]);
-                pos += state.keyword.Length;
-                span[pos++] = ' ';
-                span[pos++] = '(';
-                state.condition.AsSpan().CopyTo(span[pos..]);
-                pos += state.condition.Length;
-                span[pos] = ')';
-            }
-        );
+        return string.Concat(keyword, " (", condition, ")");
     }
 
     /// <summary>
@@ -556,35 +359,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildForStatement(string init, string condition, string increment)
     {
         // for (init; condition; increment)
-        var totalLength = 5 + init.Length + 2 + condition.Length + 2 + increment.Length + 1;
-
-        return string.Create(
-            totalLength,
-            (init, condition, increment),
-            static (span, state) =>
-            {
-                var pos = 0;
-                "for (".AsSpan().CopyTo(span[pos..]);
-                pos += 5;
-
-                state.init.AsSpan().CopyTo(span[pos..]);
-                pos += state.init.Length;
-
-                "; ".AsSpan().CopyTo(span[pos..]);
-                pos += 2;
-
-                state.condition.AsSpan().CopyTo(span[pos..]);
-                pos += state.condition.Length;
-
-                "; ".AsSpan().CopyTo(span[pos..]);
-                pos += 2;
-
-                state.increment.AsSpan().CopyTo(span[pos..]);
-                pos += state.increment.Length;
-
-                span[pos] = ')';
-            }
-        );
+        return string.Concat("for (", init, "; ", condition, "; ", increment, ")");
     }
 
     /// <summary>
@@ -597,33 +372,7 @@ public class CSharpCodeBuilder : CodeBuilder<CSharpCodeBuilder>
     private static string BuildForeachStatement(string type, string variable, string collection)
     {
         // foreach (type variable in collection)
-        var totalLength = 9 + type.Length + 1 + variable.Length + 4 + collection.Length + 1;
-
-        return string.Create(
-            totalLength,
-            (type, variable, collection),
-            static (span, state) =>
-            {
-                var pos = 0;
-                "foreach (".AsSpan().CopyTo(span[pos..]);
-                pos += 9;
-
-                state.type.AsSpan().CopyTo(span[pos..]);
-                pos += state.type.Length;
-                span[pos++] = ' ';
-
-                state.variable.AsSpan().CopyTo(span[pos..]);
-                pos += state.variable.Length;
-
-                " in ".AsSpan().CopyTo(span[pos..]);
-                pos += 4;
-
-                state.collection.AsSpan().CopyTo(span[pos..]);
-                pos += state.collection.Length;
-
-                span[pos] = ')';
-            }
-        );
+        return string.Concat("foreach (", type, " ", variable, " in ", collection, ")");
     }
 
     #endregion
