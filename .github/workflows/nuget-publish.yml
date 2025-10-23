@@ -16,13 +16,13 @@ env:
 
 jobs:
   check-version-changed:
-    name: � Check Version Changed
+    name: 🤓 Check Version Changed
     runs-on: ubuntu-latest
     outputs:
       version_changed: ${{ steps.check.outputs.changed }}
       version: ${{ steps.extract.outputs.version }}
     steps:
-      - name: � Checkout code
+      - name: 🤓 Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 2  # 获取最近两次提交以便比较
