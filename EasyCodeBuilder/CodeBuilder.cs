@@ -6,8 +6,7 @@ namespace Fengb3.EasyCodeBuilder;
 /// <summary>
 /// 代码构建器核心类 - 支持可配置的缩进方式和代码块符号
 /// </summary>
-public abstract class CodeBuilder<T>
-    where T : CodeBuilder<T>
+public class CodeBuilder
 {
     #region 缩进配置和缓存
 
@@ -32,7 +31,7 @@ public abstract class CodeBuilder<T>
 
     #region 属性和嵌套类
 
-    public T Self { get; set; } = null!;
+    // public T Self { get; set; } = null!;
 
     public int Depth
     {
@@ -44,11 +43,14 @@ public abstract class CodeBuilder<T>
         }
     }
 
-    public struct Indenter : IDisposable
+    /// <summary>
+    /// 
+    /// </summary>
+    private struct Indenter : IDisposable
     {
-        private readonly CodeBuilder<T> _builder;
+        private readonly CodeBuilder _builder;
 
-        public Indenter(CodeBuilder<T> builder)
+        public Indenter(CodeBuilder builder)
         {
             _builder = builder;
             _builder.Depth++;
@@ -150,10 +152,10 @@ public abstract class CodeBuilder<T>
     /// </summary>
     /// <param name="text">文本</param>
     /// <returns>当前构建器实例</returns>
-    public T Append(string text)
+    public CodeBuilder Append(string text)
     {
         SB.Append(text);
-        return Self;
+        return this;
     }
 
     /// <summary>
@@ -162,13 +164,13 @@ public abstract class CodeBuilder<T>
     /// <param name="text">文本 (支持以 \n 为分隔符的多行文本)</param>
     /// <param name="lineSpliter"></param>
     /// <returns>当前构建器实例</returns>
-    public T AppendLine(string text = "", char lineSpliter = '\n')
+    public CodeBuilder AppendLine(string text = "", char lineSpliter = '\n')
     {
         // 特殊处理空行，避免不必要的字符串操作
         if (string.IsNullOrEmpty(text))
         {
             SB.AppendLine();
-            return Self;
+            return this;
         }
 
         // 使用传统字符串处理多行字符串
@@ -203,7 +205,7 @@ public abstract class CodeBuilder<T>
             AppendSingleLine(string.Empty);
         }
 
-        return Self;
+        return this;
     }
 
     /// <summary>
@@ -211,14 +213,14 @@ public abstract class CodeBuilder<T>
     /// </summary>
     /// <param name="lines">多行代码</param>
     /// <returns>当前构建器实例</returns>
-    public T AppendLines(params string[] lines)
+    public CodeBuilder AppendLines(params string[] lines)
     {
         foreach (var line in lines)
         {
             AppendLine(line);
         }
 
-        return Self;
+        return this;
     }
 
 
@@ -271,7 +273,7 @@ public abstract class CodeBuilder<T>
     /// <summary>
     /// 添加代码块
     /// </summary>
-    protected T CodeBlock(Func<T, T> action, string? prefix = null)
+    protected CodeBuilder CodeBlock(Func<CodeBuilder, CodeBuilder> action, string? prefix = null)
     {
         string header;
         if (prefix is null)
@@ -292,7 +294,7 @@ public abstract class CodeBuilder<T>
 
         using (Indent)
         {
-            action(Self);
+            action(this);
         }
 
         if (!string.IsNullOrEmpty(_blockEnd))
@@ -300,13 +302,13 @@ public abstract class CodeBuilder<T>
             AppendLine(_blockEnd);
         }
 
-        return Self;
+        return this;
     }
 
     /// <summary>
     /// 添加代码块
     /// </summary>
-    protected T CodeBlock(Action<T> action, string? prefix = null)
+    protected CodeBuilder CodeBlock(Action<CodeBuilder> action, string? prefix = null)
     {
         return CodeBlock(
             cb =>
@@ -332,7 +334,7 @@ public abstract class CodeBuilder<T>
     /// <param name="builder"></param>
     /// <param name="text"></param>
     /// <returns></returns>
-    public static T operator +(CodeBuilder<T> builder, string text)
+    public static CodeBuilder operator +(CodeBuilder builder, string text)
     {
         return builder.AppendLine(text);
     }
@@ -340,7 +342,7 @@ public abstract class CodeBuilder<T>
     /// <summary>
     /// 重载 运算符，调用 AppendLine 方法
     /// </summary>
-    public static T operator <<(CodeBuilder<T> builder, string text)
+    public static CodeBuilder operator <<(CodeBuilder builder, string text)
     {
         return builder.AppendLine(text);
     }
@@ -348,7 +350,7 @@ public abstract class CodeBuilder<T>
     /// <summary>
     /// 重载 运算符，调用 Append 方法
     /// </summary>
-    public static T operator <(CodeBuilder<T> builder, string text)
+    public static CodeBuilder operator <(CodeBuilder builder, string text)
     {
         return builder.Append(text);
     }
@@ -357,9 +359,9 @@ public abstract class CodeBuilder<T>
     /// 重载 > 运算符（为了满足 C# 要求成对重载比较运算符）
     /// 这里简单返回 builder 本身，不执行任何操作
     /// </summary>
-    public static T operator >(CodeBuilder<T> builder, string text)
+    public static CodeBuilder operator >(CodeBuilder builder, string text)
     {
-        return builder.Self;
+        return builder;
     }
 
     #endregion

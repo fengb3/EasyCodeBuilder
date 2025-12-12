@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\EasyCodeBuilder.Csharp\EasyCodeBuilder.Csharp.csproj" />
       <ProjectReference Include="..\EasyCodeBuilder\EasyCodeBuilder.csproj" />
     </ItemGroup>
 
