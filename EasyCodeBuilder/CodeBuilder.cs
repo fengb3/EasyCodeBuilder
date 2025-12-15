@@ -247,33 +247,10 @@ public class CodeBuilder
         }
     }
 
-    // /// <summary>
-    // /// 添加代码块（使用配置的代码块符号）
-    // /// </summary>
-    // public T CodeBlock(Func<T, T> func)
-    // {
-    //     // 将调用重定向到带前缀的版本，prefix 传递 null
-    //     return CodeBlock(func, null);
-    // }
-    //
-    // /// <summary>
-    // /// 
-    // /// </summary>
-    // /// <param name="action"></param>
-    // /// <returns></returns>
-    // public T CodeBlock(Action<T> action)
-    // {
-    //     return CodeBlock((cb) =>
-    //         {
-    //             action(cb);
-    //             return cb;
-    //         }, null);
-    // }
-
     /// <summary>
     /// 添加代码块
     /// </summary>
-    protected CodeBuilder CodeBlock(Func<CodeBuilder, CodeBuilder> action, string? prefix = null)
+    public CodeBuilder CodeBlock(Func<CodeBuilder, CodeBuilder> func, string? prefix = null)
     {
         string header;
         if (prefix is null)
@@ -294,7 +271,7 @@ public class CodeBuilder
 
         using (Indent)
         {
-            action(this);
+            func(this);
         }
 
         if (!string.IsNullOrEmpty(_blockEnd))
@@ -308,7 +285,7 @@ public class CodeBuilder
     /// <summary>
     /// 添加代码块
     /// </summary>
-    protected CodeBuilder CodeBlock(Action<CodeBuilder> action, string? prefix = null)
+    public CodeBuilder CodeBlock(Action<CodeBuilder> action, string? prefix = null)
     {
         return CodeBlock(
             cb =>

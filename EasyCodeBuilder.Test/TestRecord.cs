@@ -1,32 +1,45 @@
 ﻿using System;
+using Fengb3.EasyCodeBuilder.Csharp;
+using static Fengb3.EasyCodeBuilder.Csharp.CsharpCode;
 using Xunit.Abstractions;
 
 namespace EasyCodeBuilder.Test;
 
-public class TestRecord
+public class TestRecord(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-    public TestRecord(ITestOutputHelper testOutputHelper)
+    [Fact]
+    public void TestNamespace()
     {
-        _testOutputHelper = testOutputHelper;
-    }
-
-    private record Something(string name)
-    {
-        public string Name { get; set; } = name;
+        var op = Create()
+            .Using("System")
+            .Using("System.Linq", "System.Collections.Generic")
+            .Namespace(@namespace => {
+                @namespace.Name = "MyNamespace";
+            })
+            .Build();
+        
+        testOutputHelper.WriteLine(op);
     }
     
     [Fact]
-    public void Test()
+    public void TestType()
     {
-        void Action(Something something)
-        {
-            something.Name = "hello";
-        }
-
-        var something = new Something("world");
-        Action(something);
-
-        _testOutputHelper.WriteLine(something.Name);
+        var op = Create()
+            .Namespace(@namespace => {
+                @namespace.Name = "MyNamespace";
+                @namespace.Type(type => {
+                    type.TypeKind = TypeOption.Type.Record;
+                    type.Keywords.Add("public");
+                    type.OnBegin += cb => cb.AppendLine("MyRecord(int Id, string Name);");
+                });
+                @namespace.Class(cls => {
+                    cls.Name = "MyClass";
+                    cls.Keywords.Add("public");
+                    cls.OnBegin += cb => cb.AppendLine("// Class body");
+                });
+            })
+            .Build();
+        
+        testOutputHelper.WriteLine(op);
     }
 }

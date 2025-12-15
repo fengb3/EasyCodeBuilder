@@ -55,7 +55,7 @@
 //
 //     #endregion
 //
-//     #region Basic Extension Methods
+//     #region Basic CsharpCode Methods
 //
 //     /// <summary>
 //     /// Conditionally adds a line of code

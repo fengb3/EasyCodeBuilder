@@ -90,7 +90,7 @@ namespace EasyCodeBuilder.Test
 //
 //     #endregion
 //
-//     #region Basic Extension Methods Tests
+//     #region Basic CsharpCode Methods Tests
 //
 //     [Fact]
 //     public void AppendWhen_ConditionTrue_AppendsLine()
