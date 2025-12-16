@@ -10,7 +10,7 @@ public class CodeBuilder
 {
     #region 缩进配置和缓存
 
-    private readonly string _indentChar;
+    private readonly char _indentChar;
     private readonly int _indentCount;
 
     // 代码块配置
@@ -74,7 +74,7 @@ public class CodeBuilder
     /// 默认构造函数 - 使用2个空格缩进和C#风格大括号
     /// </summary>
     public CodeBuilder()
-        : this(" ", 2, "{", "}", 1024)
+        : this(' ', 2, "{", "}", 1024)
     {
     }
 
@@ -87,14 +87,14 @@ public class CodeBuilder
     /// <param name="blockEnd">代码块结束符号</param>
     /// <param name="initialCapacity">初始容量</param>
     public CodeBuilder(
-        string indentChar,
+        char indentChar,
         int indentCount,
         string blockStart,
         string blockEnd,
         int initialCapacity = 1024
     )
     {
-        _indentChar = indentChar ?? throw new ArgumentNullException(nameof(indentChar));
+        _indentChar = indentChar;
         _indentCount = Math.Max(1, indentCount);
         _blockStart = blockStart ?? "";
         _blockEnd = blockEnd ?? "";
@@ -121,7 +121,7 @@ public class CodeBuilder
         // 为了性能，预先计算常用深度的缩进字符串
         for (int i = 1; i <= MaxCacheDepth; i++)
         {
-            _indentCache[i] = new string(_indentChar[0], i * _indentCount);
+            _indentCache[i] = new string(_indentChar, i * _indentCount);
         }
     }
 
@@ -140,7 +140,7 @@ public class CodeBuilder
         }
 
         // 超出缓存范围时动态创建
-        return new string(_indentChar[0], depth * _indentCount);
+        return new string(_indentChar, depth * _indentCount);
     }
 
     #endregion
@@ -250,7 +250,7 @@ public class CodeBuilder
     /// <summary>
     /// 添加代码块
     /// </summary>
-    public CodeBuilder CodeBlock(Func<CodeBuilder, CodeBuilder> func, string? prefix = null)
+    public CodeBuilder CodeBlock(CodeRenderFragment? fragment, string? prefix = null)
     {
         string header;
         if (prefix is null)
@@ -271,7 +271,7 @@ public class CodeBuilder
 
         using (Indent)
         {
-            func(this);
+            fragment?.Invoke(this);
         }
 
         if (!string.IsNullOrEmpty(_blockEnd))

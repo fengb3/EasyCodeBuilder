@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using Fengb3.EasyCodeBuilder.Csharp;
-using static Fengb3.EasyCodeBuilder.Csharp.CsharpCode;
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
 using Xunit.Abstractions;
 
 namespace EasyCodeBuilder.Test;
@@ -17,10 +18,10 @@ public class TestRecord(ITestOutputHelper testOutputHelper)
                 @namespace.Name = "MyNamespace";
             })
             .Build();
-        
+
         testOutputHelper.WriteLine(op);
     }
-    
+
     [Fact]
     public void TestType()
     {
@@ -30,16 +31,42 @@ public class TestRecord(ITestOutputHelper testOutputHelper)
                 @namespace.Type(type => {
                     type.TypeKind = TypeOption.Type.Record;
                     type.Keywords.Add("public");
-                    type.OnBegin += cb => cb.AppendLine("MyRecord(int Id, string Name);");
+                    type.Name = "MyRecord";
                 });
                 @namespace.Class(cls => {
                     cls.Name = "MyClass";
                     cls.Keywords.Add("public");
-                    cls.OnBegin += cb => cb.AppendLine("// Class body");
+
+                    cls.BaseTypes.Add("MyRecord");
+                    cls.Property(prop => {
+                        prop.Name = "MyProperty";
+                        prop.Type = "string";
+                        prop.Keywords.Add("public");
+                    });
+
+                    cls.Method(method => {
+                        method
+                            .WithKeyword("public")
+                            .WithName("MyMethod")
+                            .WithReturnType("void")
+                            .WithParameters("int x", "string y")
+                            .If(@if => {
+                                @if.Condition = "x != null";
+                                @if.AppendLine(
+                                    "Console.WriteLine(x);",
+                                    $"""
+                                    var x = 10; // {"this is comment in string interpolation"}
+                                    var y = x + 20;
+                                    Console.WriteLine(y);
+                                    """);
+                            }).Else(@else => {
+                                @else.AppendLine("Console.WriteLine(x);");
+                            });
+                    });
                 });
             })
             .Build();
-        
+
         testOutputHelper.WriteLine(op);
     }
 }

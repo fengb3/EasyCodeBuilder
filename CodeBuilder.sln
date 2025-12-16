@@ -29,8 +29,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCodeBuilder.SourceGener
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCodeBuilder.SourceGenerator.Tests", "EasyCodeBuilder.SourceGenerator\EasyCodeBuilder.SourceGenerator.Tests\EasyCodeBuilder.SourceGenerator.Tests.csproj", "{65018EFC-B9EE-4964-AC17-FC953959CC6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCodeBuilder.Csharp", "EasyCodeBuilder.Csharp\EasyCodeBuilder.Csharp.csproj", "{11900432-C999-4460-98B9-91A9DE681145}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,18 +123,6 @@ Global
 		{65018EFC-B9EE-4964-AC17-FC953959CC6D}.Release|x64.Build.0 = Release|Any CPU
 		{65018EFC-B9EE-4964-AC17-FC953959CC6D}.Release|x86.ActiveCfg = Release|Any CPU
 		{65018EFC-B9EE-4964-AC17-FC953959CC6D}.Release|x86.Build.0 = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|x64.Build.0 = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Debug|x86.Build.0 = Debug|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|x64.ActiveCfg = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|x64.Build.0 = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|x86.ActiveCfg = Release|Any CPU
-		{11900432-C999-4460-98B9-91A9DE681145}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EasyCodeBuilder.Csharp;
 using Fengb3.EasyCodeBuilder;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,9 +15,9 @@ namespace EasyCodeBuilder.Test
         {
             var cb = new CodeBuilder();
 
-            cb.Namespace(opt => {
-                opt.Name = "Hello";
-            });
+            // cb.Namespace(opt => {
+            //     opt.Name = "Hello";
+            // });
 
             testOutputHelper.WriteLine(cb.ToString());
         }
@@ -90,7 +89,7 @@ namespace EasyCodeBuilder.Test
 //
 //     #endregion
 //
-//     #region Basic CsharpCode Methods Tests
+//     #region Basic Code Methods Tests
 //
 //     [Fact]
 //     public void AppendWhen_ConditionTrue_AppendsLine()
