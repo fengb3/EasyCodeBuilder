@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Fengb3.EasyCodeBuilder;
-using Xunit;
+﻿using Fengb3.EasyCodeBuilder;
+using Fengb3.EasyCodeBuilder.Csharp;
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
 using Xunit.Abstractions;
 
 namespace EasyCodeBuilder.Test
@@ -11,15 +9,57 @@ namespace EasyCodeBuilder.Test
     public class CSharpCodeBuilderTests(ITestOutputHelper testOutputHelper)
     {
         [Fact]
-        public void Test()
+        public void TestNamespace()
         {
-            var cb = new CodeBuilder();
+            var code = Create()
+                .Using("System", "System.Collections.Generic")
+                .Namespace(ns => {
+                    ns.Name = "MyNamespace";
+                })
+                .Build();
 
-            // cb.Namespace(opt => {
-            //     opt.Name = "Hello";
-            // });
+            var expected =
+                """
+                using System;
+                using System.Collections.Generic;
 
-            testOutputHelper.WriteLine(cb.ToString());
+                namespace MyNamespace
+                {
+                }                          
+                """;
+            
+            Assert.Equal(expected.Trim(), code.Trim());
+
+            testOutputHelper.WriteLine(code);
+        }
+        
+        [Fact]
+        public void TestClassInNamespace()
+        {
+            var code = Create()
+                .AddConfiguredChild<CodeOption, NamespaceOption>(ns => {
+                    ns.Name = "MyNamespace";
+                    ns.Class(to => {
+                        to.Name = "MyClass";
+                    });
+                })
+                .Build();
+
+            var expected =
+                """
+                using System;
+
+                namespace MyNamespace
+                {
+                    public class MyClass
+                    {
+                    }
+                }                          
+                """;
+            
+            Assert.Equal(expected.Trim(), code.Trim());
+
+            testOutputHelper.WriteLine(code);
         }
     }
 }

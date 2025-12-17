@@ -30,97 +30,43 @@ public static partial class Code
         };
         return option;
     }
-
-    public static CodeOption Namespace(this CodeOption root, Action<NamespaceOption> configure)
-    {
-        var @namespace = new NamespaceOption();
-        configure(@namespace);
-        root.AddChild(@namespace);
-        return root;
-    }
-
-    public static CodeOption Type(this CodeOption @namespace, Action<TypeOption> configure)
-    {
-        var type = new TypeOption();
-        configure(type);
-
-        @namespace.AddChild(type);
-
-        return @namespace;
-    }
     
-    public static CodeOption Class(this CodeOption @namespace, Action<TypeOption> configure)
+    /// <summary>
+    /// add and configure a child parent
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="configureChild"></param>
+    /// <typeparam name="TParent"></typeparam>
+    /// <typeparam name="TChild"></typeparam>
+    /// <returns></returns>
+    public static TParent AddConfiguredChild<TParent, TChild>(this TParent parent, Action<TChild> configureChild) where TParent : CodeOption where TChild : CodeOption, new()
     {
-        return @namespace.Type(option => {
-            option.TypeKind = TypeOption.Type.Class;
-            configure(option);
-        });
-    }
-    
-    public static CodeOption Struct(this CodeOption @namespace, Action<TypeOption> configure)
-    {
-        return @namespace.Type(option => {
-            option.TypeKind = TypeOption.Type.Struct;
-            configure(option);
-        });
-    }
-    
-    public static CodeOption Interface(this CodeOption @namespace, Action<TypeOption> configure)
-    {
-        return @namespace.Type(option => {
-            option.TypeKind = TypeOption.Type.Interface;
-            configure(option);
-        });
-    }
-    
-    public static CodeOption Method(this CodeOption type, Action<MethodOption> configure)
-    {
-        var method = new MethodOption();
-        configure(method);
-        type.AddChild(method);
-        return type;
-    }
-    
-    public static CodeOption Property(this CodeOption type, Action<AutoPropertyOption> configure)
-    {
-        var prop = new AutoPropertyOption();
-        configure(prop);
-        type.AddChild(prop);
-
-        return type;
-    }
-    
-    public static CodeOption If(this CodeOption parent, Action<IfOption> configure)
-    {
-        var @if = new IfOption();
-        configure(@if);
-        parent.AddChild(@if);
+        var child = new TChild();
+        configureChild(child);
+        parent.OnChildren += child.Build;
         return parent;
     }
     
-    public static CodeOption ElseIf(this IfOption parent, Action<ElseIfOption> configure)
+    public static CodeOption AppendLine(this CodeOption option, params string[] lines)
     {
-        var elseif = new ElseIfOption();
-        configure(elseif);
-        parent.AddChild(elseif);
-        return parent;
+        option.OnChildren += cb => cb.AppendLines(lines);
+        return option;
     }
     
-    public static CodeOption Else(this CodeOption parent, Action<ElseOption> configure)
-    {
-        var @else = new ElseOption();
-        configure(@else);
-        parent.AddChild(@else);
-        return parent;
-    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="option"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static CodeOption Namespace(this CodeOption option, Action<NamespaceOption> configure)
+        => option.AddConfiguredChild(configure);
 
     public static string Build(this CodeOption root)
     {
         var cb = new CodeBuilder(' ', 2, "\n{", "}", 1024);
 
         root.Build(cb);
-        // root.OnChildren?.Invoke(cb);
-        // root.OnEnd?.Invoke(cb);
 
         return cb.ToString();
     }

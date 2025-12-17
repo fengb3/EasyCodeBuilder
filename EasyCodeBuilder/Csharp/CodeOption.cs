@@ -8,7 +8,7 @@ namespace Fengb3.EasyCodeBuilder.Csharp;
 public class CodeOption
 {
     /// <summary>
-    /// 
+    /// called to build code
     /// </summary>
     /// <param name="cb"></param>
     /// <returns></returns>
@@ -19,25 +19,7 @@ public class CodeOption
     }
     
     /// <summary>
-    /// 
+    /// called to build children code
     /// </summary>
     public CodeRenderFragment? OnChildren = null;
-}
-
-
-public static class Extensions
-{
-    public static CodeOption AddChild(this CodeOption parent, CodeOption child)
-    {
-        parent.OnChildren += child.Build;
-        // parent.OnChildren += child.OnChildren;
-        // parent.OnChildren += child.OnEnd;
-        return parent;
-    }
-    
-    public static CodeOption AppendLine(this CodeOption option, params string[] lines)
-    {
-        option.OnChildren += cb => cb.AppendLines(lines);
-        return option;
-    }
 }

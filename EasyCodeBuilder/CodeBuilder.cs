@@ -46,7 +46,7 @@ public class CodeBuilder
     /// <summary>
     /// 
     /// </summary>
-    private struct Indenter : IDisposable
+    private readonly struct Indenter : IDisposable
     {
         private readonly CodeBuilder _builder;
 
@@ -62,6 +62,17 @@ public class CodeBuilder
         }
     }
 
+    /// <summary>
+    /// indenter - call this to increase indent level, dispose to decrease
+    /// e.g.
+    /// <code>
+    /// var cb = new CodeBuilder();
+    /// using (cb.Indent) // Increase indent
+    /// {
+    ///     cb.AppendLine("Indented line");
+    /// } // Decrease indent automatically when disposed
+    /// </code>
+    /// </summary>
     public IDisposable Indent => new Indenter(this);
 
     #endregion
@@ -250,7 +261,7 @@ public class CodeBuilder
     /// <summary>
     /// 添加代码块
     /// </summary>
-    public CodeBuilder CodeBlock(CodeRenderFragment? fragment, string? prefix = null)
+    public CodeBuilder CodeBlock(CodeRenderFragment? fragment, string? prefix = null, string? surfix = null)
     {
         string header;
         if (prefix is null)
@@ -274,9 +285,15 @@ public class CodeBuilder
             fragment?.Invoke(this);
         }
 
-        if (!string.IsNullOrEmpty(_blockEnd))
+        string footer = _blockEnd;
+        if (!string.IsNullOrEmpty(surfix))
         {
-            AppendLine(_blockEnd);
+            footer += surfix;
+        }
+
+        if (!string.IsNullOrEmpty(footer))
+        {
+            AppendLine(footer);
         }
 
         return this;
@@ -285,14 +302,14 @@ public class CodeBuilder
     /// <summary>
     /// 添加代码块
     /// </summary>
-    public CodeBuilder CodeBlock(Action<CodeBuilder> action, string? prefix = null)
+    public CodeBuilder CodeBlock(Action<CodeBuilder> action, string? prefix = null, string? surfix = null)
     {
         return CodeBlock(
             cb =>
             {
                 action(cb);
                 return cb;
-            }, prefix);
+            }, prefix, surfix);
     }
 
     /// <summary>
