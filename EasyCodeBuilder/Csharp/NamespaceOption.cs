@@ -36,7 +36,7 @@ public static class NameSpaceOptionsExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static NamespaceOption Type(this NamespaceOption ns, Action<TypeOption> configure)
-         => ns.AddConfiguredChild(configure);
+         => ns.AddChildByConfiguration(configure);
     
 
     /// <summary>
@@ -46,7 +46,7 @@ public static class NameSpaceOptionsExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static NamespaceOption Class(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddConfiguredChild((TypeOption type) => {
+        => ns.AddChildByConfiguration((TypeOption type) => {
             type.TypeKind = TypeOption.Type.Class;
             configure(type);
         });
@@ -59,7 +59,7 @@ public static class NameSpaceOptionsExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static NamespaceOption Struct(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddConfiguredChild((TypeOption type) => {
+        => ns.AddChildByConfiguration((TypeOption type) => {
             type.TypeKind = TypeOption.Type.Struct;
             configure(type);
         });
@@ -71,7 +71,7 @@ public static class NameSpaceOptionsExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static NamespaceOption Enum(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddConfiguredChild((TypeOption type) => {
+        => ns.AddChildByConfiguration((TypeOption type) => {
             type.TypeKind = TypeOption.Type.Enum;
             configure(type);
         });

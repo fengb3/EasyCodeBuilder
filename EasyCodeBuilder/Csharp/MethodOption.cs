@@ -104,7 +104,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption If(this MethodOption method, Action<IfOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add else statement
@@ -113,7 +113,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption Else(this MethodOption method, Action<ElseOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add else if statement
@@ -122,7 +122,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption ElseIf(this MethodOption method, Action<ElseIfOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add for loop
@@ -131,7 +131,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption For(this MethodOption method, Action<ForOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add while loop
@@ -140,7 +140,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption While(this MethodOption method, Action<WhileOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add do while loop
@@ -149,7 +149,7 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption DoWhile(this MethodOption method, Action<DoWhileOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add foreach loop
@@ -158,5 +158,14 @@ public static class MethodOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static MethodOption Foreach(this MethodOption method, Action<ForeachOption> configure)
-        => method.AddConfiguredChild(configure);
+        => method.AddChildByConfiguration(configure);
+    
+    /// <summary>
+    /// add switch statement
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static MethodOption Switch(this MethodOption method, Action<SwitchOption> configure)
+        => method.AddChildByConfiguration(configure);
 }

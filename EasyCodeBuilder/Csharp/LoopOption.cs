@@ -72,7 +72,7 @@ public static class LoopOptionExtensions
     /// <param name="loopOption"></param>
     /// <param name="condition"></param>
     /// <returns></returns>
-    public static ForOption WithCondition<T>(this ForOption loopOption, string condition)
+    public static ForOption WithCondition(this ForOption loopOption, string condition)
     {
         loopOption.Condition = condition;
         return loopOption;

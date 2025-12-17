@@ -43,6 +43,12 @@ public class TypeOption : CodeOption
 /// </summary>
 public static class TypeOptionExtensions
 {
+    public static TypeOption WithTypeKind(this TypeOption type, TypeOption.Type typeKind)
+    {
+        type.TypeKind = typeKind;
+        return type;
+    }
+    
     /// <summary>
     /// set name of type
     /// </summary>
@@ -81,6 +87,12 @@ public static class TypeOptionExtensions
         return type;
     }
     
+    public static TypeOption Constructor(this TypeOption type, Action<ConstructorOption> configure)
+    {
+        configure += ctor => ctor.WithName(type.Name);
+        return type.AddChildByConfiguration(configure);
+    }
+
     /// <summary>
     ///  add method into type
     /// </summary>
@@ -88,7 +100,7 @@ public static class TypeOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static TypeOption Method(this TypeOption type, Action<MethodOption> configure) 
-        => type.AddConfiguredChild(configure);
+        => type.AddChildByConfiguration(configure);
     
     /// <summary>
     /// add auto property into type
@@ -97,5 +109,5 @@ public static class TypeOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static TypeOption AutoProperty(this TypeOption type, Action<AutoPropertyOption> configure)
-        => type.AddConfiguredChild(configure);
+        => type.AddChildByConfiguration(configure);
 }

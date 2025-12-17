@@ -45,7 +45,7 @@ public static class SwitchOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static SwitchOption Case(this SwitchOption switchOption, Action<CaesOption> configure)
-        => switchOption.AddConfiguredChild(configure);
+        => switchOption.AddChildByConfiguration(configure);
 
     /// <summary>
     /// add default case into switch
@@ -54,5 +54,5 @@ public static class SwitchOptionExtensions
     /// <param name="configure"></param>
     /// <returns></returns>
     public static SwitchOption Default(this SwitchOption switchOption, Action<DefaultCaseOption> configure)
-        => switchOption.AddConfiguredChild(configure);
+        => switchOption.AddChildByConfiguration(configure);
 }

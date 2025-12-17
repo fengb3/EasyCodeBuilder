@@ -39,10 +39,24 @@ public static partial class Code
     /// <typeparam name="TParent"></typeparam>
     /// <typeparam name="TChild"></typeparam>
     /// <returns></returns>
-    public static TParent AddConfiguredChild<TParent, TChild>(this TParent parent, Action<TChild> configureChild) where TParent : CodeOption where TChild : CodeOption, new()
+    public static TParent AddChildByConfiguration<TParent, TChild>(this TParent parent, Action<TChild> configureChild) where TParent : CodeOption where TChild : CodeOption, new()
     {
         var child = new TChild();
         configureChild(child);
+        parent.OnChildren += child.Build;
+        return parent;
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="child"></param>
+    /// <typeparam name="TParent"></typeparam>
+    /// <typeparam name="TChild"></typeparam>
+    /// <returns></returns>
+    public static TParent AddChild<TParent, TChild>(this TParent parent, TChild child) where TParent : CodeOption where TChild : CodeOption
+    {
         parent.OnChildren += child.Build;
         return parent;
     }
@@ -60,7 +74,7 @@ public static partial class Code
     /// <param name="configure"></param>
     /// <returns></returns>
     public static CodeOption Namespace(this CodeOption option, Action<NamespaceOption> configure)
-        => option.AddConfiguredChild(configure);
+        => option.AddChildByConfiguration(configure);
 
     public static string Build(this CodeOption root)
     {

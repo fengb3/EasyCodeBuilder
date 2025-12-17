@@ -18,26 +18,25 @@ namespace EasyCodeBuilder.Test
                 })
                 .Build();
 
-            var expected =
-                """
-                using System;
-                using System.Collections.Generic;
+            const string expected = """
+                                    using System;
+                                    using System.Collections.Generic;
 
-                namespace MyNamespace
-                {
-                }                          
-                """;
-            
+                                    namespace MyNamespace
+                                    {
+                                    }                          
+                                    """;
+
             Assert.Equal(expected.Trim(), code.Trim());
 
             testOutputHelper.WriteLine(code);
         }
-        
+
         [Fact]
         public void TestClassInNamespace()
         {
             var code = Create()
-                .AddConfiguredChild<CodeOption, NamespaceOption>(ns => {
+                .AddChildByConfiguration<CodeOption, NamespaceOption>(ns => {
                     ns.Name = "MyNamespace";
                     ns.Class(to => {
                         to.Name = "MyClass";
@@ -56,10 +55,152 @@ namespace EasyCodeBuilder.Test
                     }
                 }                          
                 """;
-            
+
             Assert.Equal(expected.Trim(), code.Trim());
 
             testOutputHelper.WriteLine(code);
+        }
+
+        [Fact]
+        public void TestPropertyInClass()
+        {
+            var code = new TypeOption()
+                .WithTypeKind(TypeOption.Type.Class)
+                .WithName("MyClass")
+                .WithKeyword("public")
+                .AutoProperty(po => {
+                    po
+                        .WithType("string")
+                        .WithName("MyProperty")
+                        .WithKeyword("public");
+                })
+                .Build();
+
+            var expected =
+                """
+                public class MyClass
+                {
+                  public string MyProperty { get; set; }
+                }
+                """;
+
+            Assert.Equal(expected.Trim(), code.Trim());
+
+            testOutputHelper.WriteLine(code);
+        }
+        
+        [Fact]
+        public void TestConstructorInClass()
+        {
+            // var constructor = new ConstructorOption()
+            //     .WithKeyword("public")
+            //     .WithParameter("string name")
+            //     .WithParameter("int age");
+
+            var classOption = new TypeOption()
+                .WithTypeKind(TypeOption.Type.Class)
+                .WithName("MyClass")
+                .WithKeyword("public")
+                .Constructor(ctor => {
+                    ctor.WithKeyword("public")
+                        .WithParameter("string name")
+                        .WithParameter("int age");
+                });
+            
+            var code = classOption.Build();
+
+            var expected =
+                """
+                public class MyClass
+                {
+                  public MyClass(string name, int age)
+                  {
+                  }
+                }
+                """;
+
+            Assert.Equal(expected.Trim(), code.Trim());
+        }
+
+        [Fact]
+        public void TestForLoopInMethod()
+        {
+            var method = new MethodOption()
+                .WithName("MyMethod")
+                .WithReturnType("void")
+                .WithKeyword("public")
+                .For(@for => {
+                    @for
+                        .WithInitializer("int i = 0")
+                        .WithCondition("i < 10")
+                        .WithIterator("i++")
+                        .AppendLine("Console.WriteLine(i);");
+                })
+                .Build();
+
+            var expected =
+                """
+                public void MyMethod()
+                {
+                  for (int i = 0; i < 10; i++)
+                  {
+                    Console.WriteLine(i);
+                  }
+                }
+                """;
+
+            Assert.Equal(expected.Trim(), method.Trim());
+        }
+
+        [Fact]
+        public void TestSwitchCaseInMethod()
+        {
+            var method = new MethodOption()
+                .WithName("CheckValue")
+                .WithReturnType("string")
+                .WithKeyword("public");
+
+            method.AppendLine("var value = GetValue();");
+
+            method.Switch(@switch => {
+                @switch.Expression = "value";
+                @switch.Case(@case => {
+                    @case.Value = "1";
+                    @case.AppendLine("""return "One";""");
+                });
+                @switch.Case(@case => {
+                    @case.Value = "2";
+                    @case.AppendLine("""return "Two";""");
+                });
+                @switch.Default(@default => @default.AppendLine("""return "Other";"""));
+            });
+
+            var methodCode = method.Build();
+
+            var expected =
+                """
+                public string CheckValue()
+                {
+                  var value = GetValue();
+                  switch (value)
+                  {
+                    case 1:
+                    {
+                      return "One";
+                    }
+                    case 2:
+                    {
+                      return "Two";
+                    }
+                    default:
+                    {
+                      return "Other";
+                    }
+                  }
+                }
+                """;
+
+            Assert.Equal(expected.Trim(), methodCode.Trim());
         }
     }
 }

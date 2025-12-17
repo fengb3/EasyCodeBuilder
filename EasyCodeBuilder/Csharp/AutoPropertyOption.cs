@@ -17,3 +17,24 @@ public class AutoPropertyOption : CodeOption
         return cb;
     }
 }
+
+public static class AutoPropertyOptionExtensions
+{
+    public static AutoPropertyOption WithKeyword(this AutoPropertyOption prop, string keyword)
+    {
+        prop.Keywords.Add(keyword);
+        return prop;
+    }
+
+    public static AutoPropertyOption WithType(this AutoPropertyOption prop, string type)
+    {
+        prop.Type = type;
+        return prop;
+    }
+
+    public static AutoPropertyOption WithName(this AutoPropertyOption prop, string name)
+    {
+        prop.Name = name;
+        return prop;
+    }
+}
