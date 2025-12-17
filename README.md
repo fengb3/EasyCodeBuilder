@@ -5,16 +5,16 @@
 ![CI](https://github.com/fengb3/EasyCodeBuilder/workflows/🔄%20Continuous%20Integration/badge.svg)
 ![NuGet](https://github.com/fengb3/EasyCodeBuilder/workflows/🚀%20NuGet%20Package%20CI/CD/badge.svg)
 
-A powerful and flexible library for dynamic code generation, supporting multiple programming languages including C#, Python, and Lisp.
+A powerful and flexible library for dynamic C# code generation using a configuration-based API.
 
 ## ✨ Features
 
-- **🚀 Fluent API**: Easy-to-use method chaining for intuitive code building
-- **🎯 Multi-Language Support**: Generate C#, Python, and Lisp code
-- **🔧 Configurable Indentation**: Support for spaces, tabs, and custom indentation
-- **📚 Rich Code Constructs**: Classes, methods, properties, control structures, and more
-- **⚡ High Performance**: Optimized string building with caching mechanisms
-- **🛡️ Type Safety**: Generic-based design ensures compile-time safety
+- **⚙️ Configuration-Based API**: Use option objects to configure code structures
+- **🏗️ Type-Safe Builder**: Strongly typed options for C# code generation
+- **🔧 Flexible Configuration**: Declarative approach with extension methods
+- **📚 Rich Code Constructs**: Namespaces, classes, methods, properties, control structures, and more
+- **⚡ High Performance**: Optimized string building with efficient rendering
+- **🛡️ Type Safety**: Compile-time safety with strongly typed options
 - **📖 XML Documentation**: Complete IntelliSense support
 
 ## 🚀 Quick Start
@@ -33,21 +33,27 @@ dotnet add package Fengb3.EasyCodeBuilder
 **API Calling**:
 ```csharp
 using Fengb3.EasyCodeBuilder.Csharp;
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
 
-var builder = new CSharpCodeBuilder();
-
-var code = builder
-    .Using("System", "System.Collections.Generic")
-    .Namespace("MyProject", ns => ns
-        .Class("Person", cls => cls
-            .Property("string", "Name", accessors: "{ get; set; }")
-            .Property("int", "Age", accessors: "{ get; set; }")
-            .Method("GetInfo", method => method
-                .AppendLine("return $\"Name: {Name}, Age: {Age}\";")
-            , returnType: "string")
-        )
-    )
-    .ToString();
+var code = Create()
+    .Using("System")
+    .Namespace(ns => {
+        ns.Name = "MyProject";
+        ns.Class(cls => {
+            cls.Name = "Person";
+            cls.AutoProperty(p => {
+                p.WithKeyword("public")
+                 .WithType("string")
+                 .WithName("Name");
+            });
+            cls.AutoProperty(p => {
+                p.WithKeyword("public")
+                 .WithType("int")
+                 .WithName("Age");
+            });
+        });
+    })
+    .Build();
 ```
 
 </div>
@@ -56,20 +62,14 @@ var code = builder
 **Generated Code**:
 ```csharp
 using System;
-using System.Collections.Generic;
 
 namespace MyProject
 {
-    public class Person
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
-        
-        public string GetInfo()
-        {
-            return $"Name: {Name}, Age: {Age}";
-        }
-    }
+  public class Person
+  {
+    public string Name { get; set; }
+    public int Age { get; set; }
+  }
 }
 ```
 
@@ -80,53 +80,52 @@ namespace MyProject
 
 For detailed documentation and examples, please refer to:
 
-- **[C# Code Builder Guide](Docs/README-cs.md)** - Complete guide for C# code generation
-- **[Python Code Builder Guide](Docs/README-py.md)** - Complete guide for Python code generation
+- **[C# Code Builder Guide](Docs/README-cs.md)** - Complete guide for C# code generation (being updated for v0.1.0)
 
-## 🏗️ Supported Languages
+## 🏗️ Architecture
 
-| Language | Status | Builder Class |
-|----------|--------|---------------|
-| **C#** | ✅ Full Support | `CSharpCodeBuilder` |
-| **Python** | ✅ Full Support | `PythonCodeBuilder` |
-| **Lisp** | ✅ Basic Support | `LispCodeBuilder` |
+EasyCodeBuilder v0.1.0 uses a configuration-based approach with option objects:
 
-## 🎯 Key Components
-
-### Core Classes
-- **`CodeBuilder<T>`** - Abstract base class with core functionality
-- **`CSharpCodeBuilder`** - C# specific code generation
-- **`PythonCodeBuilder`** - Python specific code generation  
-- **`LispCodeBuilder`** - Lisp specific code generation
-
-### Features
-- **Fluent API** - Method chaining for readable code
-- **Indentation Management** - Automatic and configurable indentation
-- **Code Blocks** - Structured code generation with proper nesting
-- **Performance Optimized** - Efficient string building and caching
+| Component | Description |
+|-----------|-------------|
+| **`CodeOption`** | Base class for all code options |
+| **`Code.Create()`** | Entry point for creating code |
+| **`NamespaceOption`** | Configure namespaces |
+| **`TypeOption`** | Configure classes, structs, interfaces |
+| **`MethodOption`** | Configure methods |
+| **`AutoPropertyOption`** | Configure auto-properties |
+| **`IfOption/ElseIfOption/ElseOption`** | Configure conditional statements |
+| **`ForOption/WhileOption/ForeachOption`** | Configure loops |
+| **`SwitchOption`** | Configure switch statements |
 
 ## 📊 Examples
 
-### Generate a Complete C# Class
+### Generate a Class with Methods
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API Calling**:
 ```csharp
-var code = new CSharpCodeBuilder()
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
+
+var code = Create()
     .Using("System")
-    .Namespace("MyApp.Models", ns => ns
-        .Class("User", cls => cls
-            .Field("string", "_name", "private")
-            .Property("string", "Name", 
-                modifiers: "public",
-                accessors: "{ get => _name; set => _name = value ?? throw new ArgumentNullException(); }")
-            .Method("ToString", method => method
-                .AppendLine("return $\"User: {Name}\";")
-            , returnType: "string", modifiers: "public override")
-        )
-    );
+    .Namespace(ns => {
+        ns.Name = "MyApp";
+        ns.Class(cls => {
+            cls.Name = "Calculator";
+            cls.WithKeyword("public");
+            cls.Method(method => {
+                method.WithName("Add")
+                      .WithKeyword("public")
+                      .WithReturnType("int")
+                      .WithParameters("int a", "int b")
+                      .AppendLine("return a + b;");
+            });
+        });
+    })
+    .Build();
 ```
 
 </div>
@@ -136,95 +135,51 @@ var code = new CSharpCodeBuilder()
 ```csharp
 using System;
 
-namespace MyApp.Models
+namespace MyApp
 {
-    public class User
+  public class Calculator
+  {
+    public int Add(int a, int b)
     {
-        private string _name;
-        
-        public string Name 
-        { 
-            get => _name; 
-            set => _name = value ?? throw new ArgumentNullException(); 
-        }
-        
-        public override string ToString()
-        {
-            return $"User: {Name}";
-        }
+      return a + b;
     }
+  }
 }
 ```
 
 </div>
 </div>
 
-### Generate Python Code
+### Using Constructors
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
 
 **API Calling**:
 ```csharp
-var pythonCode = new PythonCodeBuilder()
-    .Import("json", "datetime")
-    .AppendLine()
-    .Class("User", cls => cls
-        .Function("__init__", init => init
-            .AppendLine("self.name = name")
-            .AppendLine("self.created_at = datetime.datetime.now()")
-        , "self, name: str")
-        .AppendLine()
-        .Function("to_dict", func => func
-            .AppendLine("return {")
-            .AppendLine("    'name': self.name,")
-            .AppendLine("    'created_at': self.created_at.isoformat()")
-            .AppendLine("}")
-        , "self", "dict")
-    );
-```
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
 
-</div>
-<div style="flex: 1;">
+var classOption = new TypeOption()
+    .WithTypeKind(TypeOption.Type.Class)
+    .WithName("Person")
+    .WithKeyword("public")
+    .Constructor(ctor => {
+        ctor.WithKeyword("public")
+            .WithParameter("string name")
+            .WithParameter("int age")
+            .AppendLine("Name = name;")
+            .AppendLine("Age = age;");
+    })
+    .AutoProperty(p => p
+        .WithKeyword("public")
+        .WithType("string")
+        .WithName("Name"))
+    .AutoProperty(p => p
+        .WithKeyword("public")
+        .WithType("int")
+        .WithName("Age"));
 
-**Generated Code**:
-```python
-import json
-import datetime
-
-class User:
-    def __init__(self, name: str):
-        self.name = name
-        self.created_at = datetime.datetime.now()
-    
-    def to_dict(self) -> dict:
-        return {
-            'name': self.name,
-            'created_at': self.created_at.isoformat()
-        }
-```
-
-</div>
-</div>
-
-### Control Structures Example
-
-<div style="display: flex; gap: 20px;">
-<div style="flex: 1;">
-
-**API Calling**:
-```csharp
-var code = new CSharpCodeBuilder()
-    .Namespace("Examples", ns => ns
-        .Class("Calculator", cls => cls
-            .Method("Divide", method => method
-                .If("b == 0", ifBlock => ifBlock
-                    .AppendLine("throw new DivideByZeroException(\"Cannot divide by zero\");")
-                )
-                .AppendLine("return a / b;")
-            , returnType: "double", parameters: "double a, double b")
-        )
-    );
+var code = classOption.Build();
 ```
 
 </div>
@@ -232,24 +187,161 @@ var code = new CSharpCodeBuilder()
 
 **Generated Code**:
 ```csharp
-namespace Examples
+public class Person
 {
-    public class Calculator
-    {
-        public double Divide(double a, double b)
-        {
-            if (b == 0)
-            {
-                throw new DivideByZeroException("Cannot divide by zero");
-            }
-            return a / b;
-        }
-    }
+  public Person(string name, int age)
+  {
+    Name = name;
+    Age = age;
+  }
+  public string Name { get; set; }
+  public int Age { get; set; }
 }
 ```
 
 </div>
 </div>
+
+### Control Structures - For Loop
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
+
+var method = new MethodOption()
+    .WithName("PrintNumbers")
+    .WithReturnType("void")
+    .WithKeyword("public")
+    .For(@for => {
+        @for.WithInitializer("int i = 0")
+            .WithCondition("i < 10")
+            .WithIterator("i++")
+            .AppendLine("Console.WriteLine(i);");
+    });
+
+var code = method.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+public void PrintNumbers()
+{
+  for (int i = 0; i < 10; i++)
+  {
+    Console.WriteLine(i);
+  }
+}
+```
+
+</div>
+</div>
+
+### Control Structures - Switch Statement
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
+
+var method = new MethodOption()
+    .WithName("GetDayName")
+    .WithReturnType("string")
+    .WithKeyword("public")
+    .WithParameters("int day");
+
+method.Switch(@switch => {
+    @switch.Expression = "day";
+    @switch.Case(@case => {
+        @case.Value = "1";
+        @case.AppendLine("return \"Monday\";");
+    });
+    @switch.Case(@case => {
+        @case.Value = "2";
+        @case.AppendLine("return \"Tuesday\";");
+    });
+    @switch.Default(@default => 
+        @default.AppendLine("return \"Unknown\";")
+    );
+});
+
+var code = method.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+public string GetDayName(int day)
+{
+  switch (day)
+  {
+    case 1:
+    {
+      return "Monday";
+    }
+    case 2:
+    {
+      return "Tuesday";
+    }
+    default:
+    {
+      return "Unknown";
+    }
+  }
+}
+```
+
+</div>
+</div>
+
+## 🎯 Key Concepts
+
+### Option-Based Configuration
+
+EasyCodeBuilder v0.1.0 uses a configuration-based approach where you:
+
+1. **Create option objects** - Each code construct has a corresponding option class
+2. **Configure properties** - Use `With*` methods or set properties directly
+3. **Add children** - Nest options within options to build complex structures
+4. **Build the code** - Call `.Build()` to generate the final code string
+
+### Extension Methods
+
+The library provides fluent extension methods for common operations:
+
+- **`WithName()`**, **`WithKeyword()`**, **`WithType()`** - Configure basic properties
+- **`Using()`** - Add using statements
+- **`Namespace()`**, **`Class()`**, **`Method()`** - Add structural elements
+- **`AutoProperty()`**, **`Constructor()`** - Add members
+- **`For()`**, **`While()`**, **`If()`**, **`Switch()`** - Add control flow
+- **`AppendLine()`** - Add raw code lines
+
+### Building Code
+
+There are two main ways to build code:
+
+1. **Direct building from options**:
+   ```csharp
+   var option = new TypeOption().WithName("MyClass");
+   var code = option.Build();
+   ```
+
+2. **Using the Code.Create() entry point**:
+   ```csharp
+   var code = Code.Create()
+       .Using("System")
+       .Namespace(ns => { ... })
+       .Build();
+   ```
 
 ## 🤝 Contributing
 
