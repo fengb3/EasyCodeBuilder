@@ -78,9 +78,7 @@ namespace MyProject
 
 ## 📚 Documentation
 
-For detailed documentation and examples, please refer to:
-
-- **[C# Code Builder Guide](Docs/README-cs.md)** - Complete guide for C# code generation (being updated for v0.1.0)
+For detailed documentation and examples, see this README and the test project examples in the repository.
 
 ## 🏗️ Architecture
 
@@ -165,8 +163,8 @@ var classOption = new TypeOption()
     .WithKeyword("public")
     .Constructor(ctor => {
         ctor.WithKeyword("public")
-            .WithParameter("string name")
-            .WithParameter("int age")
+            .WithParameter("string name")  // WithParameter for constructors
+            .WithParameter("int age")      // WithParameter for constructors
             .AppendLine("Name = name;")
             .AppendLine("Age = age;");
     })
@@ -255,7 +253,7 @@ var method = new MethodOption()
     .WithName("GetDayName")
     .WithReturnType("string")
     .WithKeyword("public")
-    .WithParameters("int day");
+    .WithParameters("int day");  // WithParameters for methods
 
 method.Switch(@switch => {
     @switch.Expression = "day";
