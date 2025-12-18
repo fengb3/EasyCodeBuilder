@@ -39,18 +39,16 @@ var code = Create()
     .Using("System")
     .Namespace(ns => {
         ns.Name = "MyProject";
-        ns.Class(cls => {
-            cls.Name = "Person";
-            cls.AutoProperty(p => {
-                p.WithKeyword("public")
-                 .WithType("string")
-                 .WithName("Name");
-            });
-            cls.AutoProperty(p => {
-                p.WithKeyword("public")
-                 .WithType("int")
-                 .WithName("Age");
-            });
+        ns.Public.Class(cls => {
+            cls.WithName("Person");
+            cls.Public.AutoProperty(p => p
+                .WithType("string")
+                .WithName("Name")
+            );
+            cls.Public.AutoProperty(p => p
+                .WithType("int")
+                .WithName("Age")
+            );
         });
     })
     .Build();
@@ -111,12 +109,10 @@ var code = Create()
     .Using("System")
     .Namespace(ns => {
         ns.Name = "MyApp";
-        ns.Class(cls => {
-            cls.Name = "Calculator";
-            cls.WithKeyword("public");
-            cls.Method(method => {
+        ns.Public.Class(cls => {
+            cls.WithName("Calculator");
+            cls.Public.Method(method => {
                 method.WithName("Add")
-                      .WithKeyword("public")
                       .WithReturnType("int")
                       .WithParameters("int a", "int b")
                       .AppendLine("return a + b;");
@@ -148,6 +144,79 @@ namespace MyApp
 </div>
 </div>
 
+### Using Keyword Configurator
+
+The new `KeywordOptionConfigurator` API provides a fluent way to specify access modifiers and other keywords. Note: You need to import `Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations` to use these extension methods.
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
+
+var @namespace = new NamespaceOption()
+    .WithName("MyNamespace")
+    .Public.Class(cls => {
+        cls.WithName("MyClass");
+    });
+
+var code = @namespace.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+namespace MyNamespace
+{
+  public class MyClass
+  {
+  }
+}
+```
+
+</div>
+</div>
+
+You can also use the keyword configurator with auto-properties:
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using Fengb3.EasyCodeBuilder.Csharp;
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
+
+var @class = Create()
+    .Class(cls => cls
+        .WithName("MyClass")
+        .Public.AutoProperty(prop => prop
+            .WithName("MyProperty")
+            .WithType(typeof(int).FullName ?? "int")
+        )
+    );
+
+var classCode = @class.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+class MyClass
+{
+  public System.Int32 MyProperty { get; set; }
+}
+```
+
+</div>
+</div>
+
 ### Using Constructors
 
 <div style="display: flex; gap: 20px;">
@@ -155,27 +224,32 @@ namespace MyApp
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
+// Create a public class using KeywordConfigurator approach
 var classOption = new TypeOption()
     .WithTypeKind(TypeOption.Type.Class)
     .WithName("Person")
-    .WithKeyword("public")
-    .Constructor(ctor => {
-        ctor.WithKeyword("public")
-            .WithParameter("string name")  // WithParameter for constructors
-            .WithParameter("int age")      // WithParameter for constructors
-            .AppendLine("Name = name;")
-            .AppendLine("Age = age;");
-    })
-    .AutoProperty(p => p
-        .WithKeyword("public")
-        .WithType("string")
-        .WithName("Name"))
-    .AutoProperty(p => p
-        .WithKeyword("public")
-        .WithType("int")
-        .WithName("Age"));
+    .WithKeyword("public");  // TypeOption's public keyword
+
+// Add constructor (note: Constructor doesn't support KeywordConfigurator yet)
+classOption.Constructor(ctor => {
+    ctor.WithKeyword("public")
+        .WithParameter("string name")
+        .WithParameter("int age")
+        .AppendLine("Name = name;")
+        .AppendLine("Age = age;");
+});
+
+// Use KeywordConfigurator for properties
+classOption.Public.AutoProperty(p => p
+    .WithType("string")
+    .WithName("Name"));
+
+classOption.Public.AutoProperty(p => p
+    .WithType("int")
+    .WithName("Age"));
 
 var code = classOption.Build();
 ```
@@ -207,20 +281,26 @@ public class Person
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
-var method = new MethodOption()
-    .WithName("PrintNumbers")
-    .WithReturnType("void")
-    .WithKeyword("public")
-    .For(@for => {
-        @for.WithInitializer("int i = 0")
-            .WithCondition("i < 10")
-            .WithIterator("i++")
-            .AppendLine("Console.WriteLine(i);");
-    });
+// Create a method using KeywordConfigurator for public access
+var classOption = new TypeOption()
+    .WithTypeKind(TypeOption.Type.Class)
+    .WithName("NumberPrinter");
 
-var code = method.Build();
+classOption.Public.Method(method => {
+    method.WithName("PrintNumbers")
+          .WithReturnType("void")
+          .For(@for => {
+              @for.WithInitializer("int i = 0")
+                  .WithCondition("i < 10")
+                  .WithIterator("i++")
+                  .AppendLine("Console.WriteLine(i);");
+          });
+});
+
+var code = classOption.Build();
 ```
 
 </div>
@@ -228,11 +308,14 @@ var code = method.Build();
 
 **Generated Code**:
 ```csharp
-public void PrintNumbers()
+class NumberPrinter
 {
-  for (int i = 0; i < 10; i++)
+  public void PrintNumbers()
   {
-    Console.WriteLine(i);
+    for (int i = 0; i < 10; i++)
+    {
+      Console.WriteLine(i);
+    }
   }
 }
 ```
@@ -247,30 +330,36 @@ public void PrintNumbers()
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
-var method = new MethodOption()
-    .WithName("GetDayName")
-    .WithReturnType("string")
-    .WithKeyword("public")
-    .WithParameters("int day");  // WithParameters for methods
+// Create a class with a public method using KeywordConfigurator
+var classOption = new TypeOption()
+    .WithTypeKind(TypeOption.Type.Class)
+    .WithName("DayHelper");
 
-method.Switch(@switch => {
-    @switch.Expression = "day";
-    @switch.Case(@case => {
-        @case.Value = "1";
-        @case.AppendLine("return \"Monday\";");
+classOption.Public.Method(method => {
+    method.WithName("GetDayName")
+          .WithReturnType("string")
+          .WithParameters("int day");  // WithParameters for methods
+    
+    method.Switch(@switch => {
+        @switch.Expression = "day";
+        @switch.Case(@case => {
+            @case.Value = "1";
+            @case.AppendLine("return \"Monday\";");
+        });
+        @switch.Case(@case => {
+            @case.Value = "2";
+            @case.AppendLine("return \"Tuesday\";");
+        });
+        @switch.Default(@default => 
+            @default.AppendLine("return \"Unknown\";")
+        );
     });
-    @switch.Case(@case => {
-        @case.Value = "2";
-        @case.AppendLine("return \"Tuesday\";");
-    });
-    @switch.Default(@default => 
-        @default.AppendLine("return \"Unknown\";")
-    );
 });
 
-var code = method.Build();
+var code = classOption.Build();
 ```
 
 </div>
@@ -278,21 +367,24 @@ var code = method.Build();
 
 **Generated Code**:
 ```csharp
-public string GetDayName(int day)
+class DayHelper
 {
-  switch (day)
+  public string GetDayName(int day)
   {
-    case 1:
+    switch (day)
     {
-      return "Monday";
-    }
-    case 2:
-    {
-      return "Tuesday";
-    }
-    default:
-    {
-      return "Unknown";
+      case 1:
+      {
+        return "Monday";
+      }
+      case 2:
+      {
+        return "Tuesday";
+      }
+      default:
+      {
+        return "Unknown";
+      }
     }
   }
 }
@@ -317,6 +409,8 @@ EasyCodeBuilder v0.1.0 uses a configuration-based approach where you:
 The library provides fluent extension methods for common operations:
 
 - **`WithName()`**, **`WithKeyword()`**, **`WithType()`** - Configure basic properties
+- **`Public`**, **`Private`**, **`Internal`**, **`Static`** - Keyword configurator properties for fluent keyword specification
+- **`KeywordConfigurator`** - Access the keyword configurator for advanced chaining with `Parent` property
 - **`Using()`** - Add using statements
 - **`Namespace()`**, **`Class()`**, **`Method()`** - Add structural elements
 - **`AutoProperty()`**, **`Constructor()`** - Add members
