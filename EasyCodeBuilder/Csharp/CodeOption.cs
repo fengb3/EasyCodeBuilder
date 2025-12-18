@@ -3,15 +3,15 @@
 namespace Fengb3.EasyCodeBuilder.Csharp;
 
 /// <summary>
-/// 
+/// 代码选项基类
 /// </summary>
 public class CodeOption
 {
     /// <summary>
-    /// called to build code
+    /// 构建代码
     /// </summary>
-    /// <param name="cb"></param>
-    /// <returns></returns>
+    /// <param name="cb">代码构建器</param>
+    /// <returns>代码构建器</returns>
     public virtual CodeBuilder Build(CodeBuilder cb)
     {
         OnChildren?.Invoke(cb);
@@ -19,7 +19,7 @@ public class CodeOption
     }
     
     /// <summary>
-    /// called to build children code
+    /// 子节点构建委托
     /// </summary>
     public CodeRenderFragment? OnChildren = null;
 }

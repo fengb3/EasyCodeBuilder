@@ -3,12 +3,23 @@
 namespace Fengb3.EasyCodeBuilder.Csharp;
 
 /// <summary>
-/// 
+/// 构造函数选项
 /// </summary>
 public class ConstructorOption : CodeOption
 {
+    /// <summary>
+    /// 关键字列表
+    /// </summary>
     public ICollection<string> Keywords { get; } = new HashSet<string>();
+    
+    /// <summary>
+    /// 构造函数名称
+    /// </summary>
     public string Name { get; set; } = "";
+    
+    /// <summary>
+    /// 参数列表
+    /// </summary>
     public ICollection<string> Parameters { get; } = new HashSet<string>();
 
 

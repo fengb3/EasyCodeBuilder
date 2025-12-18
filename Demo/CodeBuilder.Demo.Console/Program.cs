@@ -1,6 +1,7 @@
-﻿
-using System.Reflection;
+﻿using System.Reflection;
 using CodeBuilder.Demo.Console;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
 var command = args[0];
 
@@ -16,24 +17,25 @@ if (handler == null)
 handler.Invoke(null, null);
 
 
-#pragma warning disable CS8321 // Local function is declared but never used
+#pragma warning disable CS8321// Local function is declared but never used
 [CommandHandler("csharp")]
 static void CsharpCodeBuilderTest()
 {
-    // var cb = new CSharpCodeBuilder();
-    // cb.Namespace("Example")(ns => ns
-    //     .Class("MyClass")(cls => cls
-    //         .Method("TestMethod")(method =>
-    //             method
-    //             << "var sb = new StringBuilder();"
-    //             << "sb.AppendLine(\"Hello from CodeBlock!\")"
-    //             << ".AppendLine(\"Hello from CodeBlock!\")"
-    //             << ".AppendLine(\"Hello from CodeBlock!\")"
-    //             << "Console.WriteLine(sb.ToString());"
-    //         )
-    //     )
-    // );
-    // Console.WriteLine(cb.ToString());
+    var root = Code.Create()
+        .Namespace(ns => {
+            ns.Public.Class(clt => {
+                clt.Public.Static.Method(mtd => {
+                    mtd.AppendLine("var sb = new StringBuilder();")
+                        .AppendLine("sb.AppendLine(\"Hello from CodeBlock!\")")
+                        .AppendLine(".AppendLine(\"Hello from CodeBlock!\")")
+                        .AppendLine(".AppendLine(\"Hello from CodeBlock!\");")
+                        .AppendLine("Console.WriteLine(sb.ToString());");
+                });
+            });
+        });
+
+    Console.WriteLine(root.Build());
+    
 }
 
 [CommandHandler("python")]
@@ -55,8 +57,10 @@ static void PythonCodeBuilderTest()
 
 namespace CodeBuilder.Demo.Console
 {
+
     public class CommandHandlerAttribute(string name) : Attribute
     {
         public string Name { get; } = name;
     }
+
 }

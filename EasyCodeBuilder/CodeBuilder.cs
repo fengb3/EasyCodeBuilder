@@ -33,6 +33,9 @@ public class CodeBuilder
 
     // public T Self { get; set; } = null!;
 
+    /// <summary>
+    /// 当前缩进深度
+    /// </summary>
     public int Depth
     {
         get => _depth;

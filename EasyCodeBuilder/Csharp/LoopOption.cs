@@ -7,8 +7,19 @@ namespace Fengb3.EasyCodeBuilder.Csharp;
 /// </summary>
 public class ForOption : CodeOption
 {
+    /// <summary>
+    /// 初始化语句
+    /// </summary>
     public string Initializer { get; set; } = "";
+    
+    /// <summary>
+    /// 条件表达式
+    /// </summary>
     public string Condition   { get; set; } = "";
+    
+    /// <summary>
+    /// 迭代语句
+    /// </summary>
     public string Iterator    { get; set; } = "";
 
     /// <inheritdoc />
@@ -21,8 +32,16 @@ public class ForOption : CodeOption
 /// </summary>
 public class WhileOption : CodeOption
 {
+    /// <summary>
+    /// 条件表达式
+    /// </summary>
     public string Condition { get; set; } = "";
 
+    /// <summary>
+    /// 构建代码
+    /// </summary>
+    /// <param name="cb">代码构建器</param>
+    /// <returns>代码构建器</returns>
     public override CodeBuilder Build(CodeBuilder cb)
         => cb.CodeBlock(OnChildren, $"while ({Condition})");
 }
@@ -32,6 +51,9 @@ public class WhileOption : CodeOption
 /// </summary>
 public class DoWhileOption : CodeOption
 {
+    /// <summary>
+    /// 条件表达式
+    /// </summary>
     public string Condition { get; set; } = "";
 
     /// <inheritdoc />
@@ -44,14 +66,33 @@ public class DoWhileOption : CodeOption
 /// </summary>
 public class ForeachOption : CodeOption
 {
+    /// <summary>
+    /// 变量类型
+    /// </summary>
     public string VariableType { get; set; } = "";
+    
+    /// <summary>
+    /// 变量名称
+    /// </summary>
     public string VariableName { get; set; } = "";
+    
+    /// <summary>
+    /// 集合表达式
+    /// </summary>
     public string Collection   { get; set; } = "";
 
+    /// <summary>
+    /// 构建代码
+    /// </summary>
+    /// <param name="cb">代码构建器</param>
+    /// <returns>代码构建器</returns>
     public override CodeBuilder Build(CodeBuilder cb)
         => cb.CodeBlock(OnChildren, $"foreach ({VariableType} {VariableName} in {Collection})");
 }
 
+/// <summary>
+/// 循环选项扩展方法
+/// </summary>
 public static class LoopOptionExtensions
 {
     /// <summary>
