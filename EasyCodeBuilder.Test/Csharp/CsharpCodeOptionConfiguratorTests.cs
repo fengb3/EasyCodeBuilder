@@ -5,13 +5,8 @@ using Xunit.Abstractions;
 
 namespace EasyCodeBuilder.Test.Csharp;
 
-public class CsharpCodeOptionConfiguratorTests
+public class CsharpCodeOptionConfiguratorTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-    public CsharpCodeOptionConfiguratorTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
     [Fact]
     public void TestKeywordOptionConfigurator_PublicClassInNamespace()
     {
@@ -35,7 +30,7 @@ public class CsharpCodeOptionConfiguratorTests
 
         Assert.Equal(expected.Trim(), namespaceCode.Trim());
 
-        _testOutputHelper.WriteLine(namespaceCode);
+        testOutputHelper.WriteLine(namespaceCode);
     }
 
     [Fact]
@@ -45,8 +40,7 @@ public class CsharpCodeOptionConfiguratorTests
             .WithName("MyNamespace")
             .Class(cls => {
                 cls.WithName("MyClass");
-                // Add in a shuffled order to verify ordering logic.
-                cls.KeywordConfigurator.Static.Private.Parent.Method(mth => {
+                cls.Static.Private.Method(mth => {
                     mth.WithName("MyMethod");
                     mth.AppendLine("Console.WriteLine(\"Hello, World!\");");
                 });

@@ -1,4 +1,5 @@
 ﻿using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 using Xunit;
 
 namespace EasyCodeBuilder.Test.Csharp;
@@ -34,9 +35,7 @@ public class UsingAndFieldOptionTests
             .WithTypeKind(TypeOption.Type.Class)
             .WithName("MyClass")
             .WithKeywords("public")
-            .Field(f => f
-                .WithKeyword("private")
-                .WithKeyword("readonly")
+            .Private.Readonly.Field(f => f
                 .WithType("int")
                 .WithName("_x")
                 .WithInitializer("1")

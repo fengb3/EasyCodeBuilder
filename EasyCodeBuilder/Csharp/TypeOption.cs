@@ -74,7 +74,7 @@ public class TypeOption : CodeOption
     /// <summary>
     /// 关键字配置器
     /// </summary>
-    public KeywordOptionConfigurator<TypeOption> KeywordConfigurator => new(this);
+    private KeywordOptionConfigurator<TypeOption> KeywordConfigurator => new(this);
 
     /// <summary>
     /// 公共访问修饰符配置器
