@@ -146,7 +146,7 @@ namespace MyApp
 
 ### Using Keyword Configurator
 
-The new `KeywordOptionConfigurator` API provides a fluent way to specify access modifiers and other keywords:
+The new `KeywordOptionConfigurator` API provides a fluent way to specify access modifiers and other keywords. Note: You need to import `Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations` to use these extension methods.
 
 <div style="display: flex; gap: 20px;">
 <div style="flex: 1;">
@@ -154,6 +154,7 @@ The new `KeywordOptionConfigurator` API provides a fluent way to specify access 
 **API Calling**:
 ```csharp
 using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
 var @namespace = new NamespaceOption()
     .WithName("MyNamespace")
