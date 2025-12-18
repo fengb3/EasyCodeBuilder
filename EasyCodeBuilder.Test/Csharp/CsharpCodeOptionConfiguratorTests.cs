@@ -17,11 +17,10 @@ public class CsharpCodeOptionConfiguratorTests
     {
         var @namespace = new NamespaceOption()
             .WithName("MyNamespace")
-            .Public.Class(cls =>
-            {
+            .Public.Class(cls => {
                 cls.WithName("MyClass");
             });
-        
+
         var namespaceCode = @namespace.Build();
 
         const string expected =
@@ -33,7 +32,7 @@ public class CsharpCodeOptionConfiguratorTests
               }
             }
             """;
-        
+
         Assert.Equal(expected.Trim(), namespaceCode.Trim());
 
         _testOutputHelper.WriteLine(namespaceCode);
@@ -46,7 +45,8 @@ public class CsharpCodeOptionConfiguratorTests
             .WithName("MyNamespace")
             .Class(cls => {
                 cls.WithName("MyClass");
-                cls.Private.Static.Method(mth => {
+                // Add in a shuffled order to verify ordering logic.
+                cls.KeywordConfigurator.Static.Private.Parent.Method(mth => {
                     mth.WithName("MyMethod");
                     mth.AppendLine("Console.WriteLine(\"Hello, World!\");");
                 });
@@ -68,7 +68,31 @@ public class CsharpCodeOptionConfiguratorTests
             """;
 
         Assert.Equal(expected.Trim(), namespaceCode.Trim());
-        _testOutputHelper.WriteLine(namespaceCode);
+        // _testOutputHelper.WriteLine(namespaceCode);
+    }
+
+    [Fact]
+    public void TestKeywordOptionConfigurator_PublicStaticPropertyInClass()
+    {
+        var @class = Code.Create()
+            .Class(cls => cls
+                .WithName("MyClass")
+                .Public.AutoProperty(prop => prop
+                    .WithName("MyProperty")
+                    .WithType(typeof(int).FullName ?? "int")
+                )
+            );
+
+        var classCode = @class.Build();
+        const string expected =
+            """
+            class MyClass
+            {
+              public System.Int32 MyProperty { get; set; }
+            }
+            """;
+        
+        Assert.Equal(expected.Trim(), classCode.Trim());
     }
 
 }

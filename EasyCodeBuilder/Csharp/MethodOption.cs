@@ -35,11 +35,11 @@ public class MethodOption : CodeOption
     /// <returns>代码构建器</returns>
     public override CodeBuilder Build(CodeBuilder cb)
     {
-        var keywords   = string.Join(" ", Keywords);
+        var keywords   = string.Join(" ", CsharpKeywordOrdering.OrderForMember(Keywords));
         var parameters = string.Join(", ", Parameters);
-        
-        cb.CodeBlock(OnChildren, $"{keywords} {ReturnType} {Name}({parameters})");
-        
+
+        cb.CodeBlock(OnChildren, $"{keywords} {ReturnType} {Name}({parameters})".Trim());
+
         return cb;
     }
 }

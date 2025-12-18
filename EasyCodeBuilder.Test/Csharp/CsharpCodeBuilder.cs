@@ -44,13 +44,11 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 
         var expected =
             """
-            using System;
-
             namespace MyNamespace
             {
-                public class MyClass
-                {
-                }
+              class MyClass
+              {
+              }
             }                          
             """;
 
@@ -1255,3 +1253,4 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 //      #endregion
 //  }
 // }
+

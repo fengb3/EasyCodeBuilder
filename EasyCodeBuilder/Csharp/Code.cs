@@ -19,23 +19,64 @@ public static partial class Code
     }
 
     /// <summary>
-    /// 添加 using 语句
+    /// Backward-compatible API: add using directives by namespace names.
     /// </summary>
-    /// <param name="option">代码选项</param>
-    /// <param name="usings">using 命名空间列表</param>
-    /// <returns>代码选项</returns>
     public static CodeOption Using(this CodeOption option, params string[] usings)
     {
-        option.OnChildren += cb => {
-            foreach (var u in usings)
-            {
-                cb.AppendLine($"using {u};");
-            }
-            cb.AppendLine();
-            return cb;
-        };
+        foreach (var u in usings)
+        {
+            option.AddChild<CodeOption, UsingOption>(uo => {
+                uo.Name = u;
+            });
+        }
+
+        // keep existing behavior: add a blank line after usings
+        option.OnChildren += cb => cb.AppendLine();
         return option;
     }
+
+    /// <summary>
+    /// Add a single using directive with full configuration.
+    /// </summary>
+    public static CodeOption Using(this CodeOption option, Action<UsingOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// using static {typeOrNamespace};
+    /// </summary>
+    public static CodeOption UsingStatic(this CodeOption option, string typeOrNamespace)
+        => option.AddChild<CodeOption, UsingOption>(uo => {
+            uo.Name = typeOrNamespace;
+            uo.IsStatic = true;
+        });
+
+    /// <summary>
+    /// using {alias} = {typeOrNamespace};
+    /// </summary>
+    public static CodeOption UsingAlias(this CodeOption option, string alias, string typeOrNamespace)
+        => option.AddChild<CodeOption, UsingOption>(uo => {
+            uo.Alias = alias;
+            uo.Name = typeOrNamespace;
+        });
+
+    /// <summary>
+    /// global using {typeOrNamespace};
+    /// </summary>
+    public static CodeOption GlobalUsing(this CodeOption option, string typeOrNamespace)
+        => option.AddChild<CodeOption, UsingOption>(uo => {
+            uo.Keywords.Add("global");
+            uo.Name = typeOrNamespace;
+        });
+
+    /// <summary>
+    /// global using static {typeOrNamespace};
+    /// </summary>
+    public static CodeOption GlobalUsingStatic(this CodeOption option, string typeOrNamespace)
+        => option.AddChild<CodeOption, UsingOption>(uo => {
+            uo.Keywords.Add("global");
+            uo.Name = typeOrNamespace;
+            uo.IsStatic = true;
+        });
 
     /// <summary>
     /// add and configure a child parent
@@ -87,6 +128,15 @@ public static partial class Code
     /// <returns></returns>
     public static CodeOption Namespace(this CodeOption option, Action<NamespaceOption> configure)
         => option.AddChild(configure);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="option"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static CodeOption Class(this CodeOption option, Action<TypeOption> configure)
+        => option.AddChild(configure);
 
     /// <summary>
     /// 构建代码
@@ -97,9 +147,7 @@ public static partial class Code
     public static string Build(this CodeOption root, CodeBuilder? cb = null)
     {
         cb ??= new CodeBuilder(' ', 2, "\n{", "}", 1024);
-
         root.Build(cb);
-
         return cb.ToString();
     }
 }

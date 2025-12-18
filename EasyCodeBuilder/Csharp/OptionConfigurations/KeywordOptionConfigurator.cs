@@ -105,6 +105,18 @@ public class KeywordOptionConfigurator<TParent>(TParent parent)
             return this;
         }
     }
+    
+    /// <summary>
+    /// 添加 readonly 关键字
+    /// </summary>
+    public KeywordOptionConfigurator<TParent> Readonly
+    {
+        get
+        {
+            Keywords.Add("readonly");
+            return this;
+        }
+    }
 
     /// <summary>
     /// configure the keywords into the parent option

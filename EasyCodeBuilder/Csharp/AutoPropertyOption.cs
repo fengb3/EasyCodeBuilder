@@ -29,8 +29,8 @@ public class AutoPropertyOption : CodeOption
     /// <returns>代码构建器</returns>
     public override CodeBuilder Build(CodeBuilder cb)
     {
-        var keywords = string.Join(" ", Keywords);
-        cb.AppendLine($"{keywords} {Type} {Name} {{ get; set; }}");
+        var keywords = string.Join(" ", CsharpKeywordOrdering.OrderForMember(Keywords));
+        cb.AppendLine($"{keywords} {Type} {Name} {{ get; set; }}".Trim());
         return cb;
     }
 }
