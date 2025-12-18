@@ -39,18 +39,16 @@ var code = Create()
     .Using("System")
     .Namespace(ns => {
         ns.Name = "MyProject";
-        ns.Class(cls => {
-            cls.Name = "Person";
-            cls.AutoProperty(p => {
-                p.WithKeyword("public")
-                 .WithType("string")
-                 .WithName("Name");
-            });
-            cls.AutoProperty(p => {
-                p.WithKeyword("public")
-                 .WithType("int")
-                 .WithName("Age");
-            });
+        ns.Public.Class(cls => {
+            cls.WithName("Person");
+            cls.Public.AutoProperty(p => p
+                .WithType("string")
+                .WithName("Name")
+            );
+            cls.Public.AutoProperty(p => p
+                .WithType("int")
+                .WithName("Age")
+            );
         });
     })
     .Build();
@@ -111,12 +109,10 @@ var code = Create()
     .Using("System")
     .Namespace(ns => {
         ns.Name = "MyApp";
-        ns.Class(cls => {
-            cls.Name = "Calculator";
-            cls.WithKeyword("public");
-            cls.Method(method => {
+        ns.Public.Class(cls => {
+            cls.WithName("Calculator");
+            cls.Public.Method(method => {
                 method.WithName("Add")
-                      .WithKeyword("public")
                       .WithReturnType("int")
                       .WithParameters("int a", "int b")
                       .AppendLine("return a + b;");
@@ -142,6 +138,78 @@ namespace MyApp
       return a + b;
     }
   }
+}
+```
+
+</div>
+</div>
+
+### Using Keyword Configurator
+
+The new `KeywordOptionConfigurator` API provides a fluent way to specify access modifiers and other keywords:
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using Fengb3.EasyCodeBuilder.Csharp;
+
+var @namespace = new NamespaceOption()
+    .WithName("MyNamespace")
+    .Public.Class(cls => {
+        cls.WithName("MyClass");
+    });
+
+var code = @namespace.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+namespace MyNamespace
+{
+  public class MyClass
+  {
+  }
+}
+```
+
+</div>
+</div>
+
+You can also use the keyword configurator with auto-properties:
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**API Calling**:
+```csharp
+using Fengb3.EasyCodeBuilder.Csharp;
+using static Fengb3.EasyCodeBuilder.Csharp.Code;
+
+var @class = Create()
+    .Class(cls => cls
+        .WithName("MyClass")
+        .Public.AutoProperty(prop => prop
+            .WithName("MyProperty")
+            .WithType(typeof(int).FullName ?? "int")
+        )
+    );
+
+var classCode = @class.Build();
+```
+
+</div>
+<div style="flex: 1;">
+
+**Generated Code**:
+```csharp
+class MyClass
+{
+  public System.Int32 MyProperty { get; set; }
 }
 ```
 
@@ -317,6 +385,8 @@ EasyCodeBuilder v0.1.0 uses a configuration-based approach where you:
 The library provides fluent extension methods for common operations:
 
 - **`WithName()`**, **`WithKeyword()`**, **`WithType()`** - Configure basic properties
+- **`Public`**, **`Private`**, **`Internal`**, **`Static`** - Keyword configurator properties for fluent keyword specification
+- **`KeywordConfigurator`** - Access the keyword configurator for advanced chaining with `Parent` property
 - **`Using()`** - Add using statements
 - **`Namespace()`**, **`Class()`**, **`Method()`** - Add structural elements
 - **`AutoProperty()`**, **`Constructor()`** - Add members
