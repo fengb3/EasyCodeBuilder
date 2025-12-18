@@ -224,27 +224,32 @@ class MyClass
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
+// Create a public class using KeywordConfigurator approach
 var classOption = new TypeOption()
     .WithTypeKind(TypeOption.Type.Class)
     .WithName("Person")
-    .WithKeyword("public")
-    .Constructor(ctor => {
-        ctor.WithKeyword("public")
-            .WithParameter("string name")  // WithParameter for constructors
-            .WithParameter("int age")      // WithParameter for constructors
-            .AppendLine("Name = name;")
-            .AppendLine("Age = age;");
-    })
-    .AutoProperty(p => p
-        .WithKeyword("public")
-        .WithType("string")
-        .WithName("Name"))
-    .AutoProperty(p => p
-        .WithKeyword("public")
-        .WithType("int")
-        .WithName("Age"));
+    .WithKeyword("public");  // TypeOption's public keyword
+
+// Add constructor (note: Constructor doesn't support KeywordConfigurator yet)
+classOption.Constructor(ctor => {
+    ctor.WithKeyword("public")
+        .WithParameter("string name")
+        .WithParameter("int age")
+        .AppendLine("Name = name;")
+        .AppendLine("Age = age;");
+});
+
+// Use KeywordConfigurator for properties
+classOption.Public.AutoProperty(p => p
+    .WithType("string")
+    .WithName("Name"));
+
+classOption.Public.AutoProperty(p => p
+    .WithType("int")
+    .WithName("Age"));
 
 var code = classOption.Build();
 ```
@@ -276,20 +281,26 @@ public class Person
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
-var method = new MethodOption()
-    .WithName("PrintNumbers")
-    .WithReturnType("void")
-    .WithKeyword("public")
-    .For(@for => {
-        @for.WithInitializer("int i = 0")
-            .WithCondition("i < 10")
-            .WithIterator("i++")
-            .AppendLine("Console.WriteLine(i);");
-    });
+// Create a method using KeywordConfigurator for public access
+var classOption = new TypeOption()
+    .WithTypeKind(TypeOption.Type.Class)
+    .WithName("NumberPrinter");
 
-var code = method.Build();
+classOption.Public.Method(method => {
+    method.WithName("PrintNumbers")
+          .WithReturnType("void")
+          .For(@for => {
+              @for.WithInitializer("int i = 0")
+                  .WithCondition("i < 10")
+                  .WithIterator("i++")
+                  .AppendLine("Console.WriteLine(i);");
+          });
+});
+
+var code = classOption.Build();
 ```
 
 </div>
@@ -297,11 +308,14 @@ var code = method.Build();
 
 **Generated Code**:
 ```csharp
-public void PrintNumbers()
+class NumberPrinter
 {
-  for (int i = 0; i < 10; i++)
+  public void PrintNumbers()
   {
-    Console.WriteLine(i);
+    for (int i = 0; i < 10; i++)
+    {
+      Console.WriteLine(i);
+    }
   }
 }
 ```
@@ -316,30 +330,36 @@ public void PrintNumbers()
 
 **API Calling**:
 ```csharp
-using static Fengb3.EasyCodeBuilder.Csharp.Code;
+using Fengb3.EasyCodeBuilder.Csharp;
+using Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 
-var method = new MethodOption()
-    .WithName("GetDayName")
-    .WithReturnType("string")
-    .WithKeyword("public")
-    .WithParameters("int day");  // WithParameters for methods
+// Create a class with a public method using KeywordConfigurator
+var classOption = new TypeOption()
+    .WithTypeKind(TypeOption.Type.Class)
+    .WithName("DayHelper");
 
-method.Switch(@switch => {
-    @switch.Expression = "day";
-    @switch.Case(@case => {
-        @case.Value = "1";
-        @case.AppendLine("return \"Monday\";");
+classOption.Public.Method(method => {
+    method.WithName("GetDayName")
+          .WithReturnType("string")
+          .WithParameters("int day");  // WithParameters for methods
+    
+    method.Switch(@switch => {
+        @switch.Expression = "day";
+        @switch.Case(@case => {
+            @case.Value = "1";
+            @case.AppendLine("return \"Monday\";");
+        });
+        @switch.Case(@case => {
+            @case.Value = "2";
+            @case.AppendLine("return \"Tuesday\";");
+        });
+        @switch.Default(@default => 
+            @default.AppendLine("return \"Unknown\";")
+        );
     });
-    @switch.Case(@case => {
-        @case.Value = "2";
-        @case.AppendLine("return \"Tuesday\";");
-    });
-    @switch.Default(@default => 
-        @default.AppendLine("return \"Unknown\";")
-    );
 });
 
-var code = method.Build();
+var code = classOption.Build();
 ```
 
 </div>
@@ -347,7 +367,31 @@ var code = method.Build();
 
 **Generated Code**:
 ```csharp
-public string GetDayName(int day)
+class DayHelper
+{
+  public string GetDayName(int day)
+  {
+    switch (day)
+    {
+      case 1:
+      {
+        return "Monday";
+      }
+      case 2:
+      {
+        return "Tuesday";
+      }
+      default:
+      {
+        return "Unknown";
+      }
+    }
+  }
+}
+```
+
+</div>
+</div>
 {
   switch (day)
   {
