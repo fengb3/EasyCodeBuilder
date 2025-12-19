@@ -22,20 +22,29 @@ handler.Invoke(null, null);
 static void CsharpCodeBuilderTest()
 {
     var root = Code.Create()
-        .Namespace(ns => {
-            ns.Public.Class(clt => {
-                clt.Public.Static.Method(mtd => {
-                    mtd.AppendLine("var sb = new StringBuilder();")
-                        .AppendLine("sb.AppendLine(\"Hello from CodeBlock!\")")
-                        .AppendLine(".AppendLine(\"Hello from CodeBlock!\")")
-                        .AppendLine(".AppendLine(\"Hello from CodeBlock!\");")
-                        .AppendLine("Console.WriteLine(sb.ToString());");
-                });
-            });
-        });
+        .Namespace(ns => ns
+            .WithName("Demo.Generated")
+            .Public.Class(cls => cls
+                .Public.AutoProperty(prop => prop
+                    .WithType("int")
+                    .WithName("Id")
+                )
+                .WithName("ExampleClass")
+                .Public.Static.Method(mtd => mtd
+                    .WithName("SayHello")
+                    .WithParameters("string name", "int times = 114514")
+                    .For(@for => @for
+                        .WithInitializer("var i = 0")
+                        .WithCondition("i < times")
+                        .WithIterator("i++")
+                        .AppendLine("Console.WriteLine($\"Hello, {name}!\");")
+                    )
+                )
+            )
+        );
 
     Console.WriteLine(root.Build());
-    
+
 }
 
 [CommandHandler("python")]

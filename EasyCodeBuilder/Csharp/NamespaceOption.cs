@@ -27,17 +27,17 @@ public class NamespaceOption : CodeOption
     /// <summary>
     /// 公共访问修饰符配置器
     /// </summary>
-    public KeywordOptionConfigurator<NamespaceOption> Public   => KeywordConfigurator.Public;
-    
+    public KeywordOptionConfigurator<NamespaceOption> Public => KeywordConfigurator.Public;
+
     /// <summary>
     /// 内部访问修饰符配置器
     /// </summary>
     public KeywordOptionConfigurator<NamespaceOption> Internal => KeywordConfigurator.Internal;
-    
+
     /// <summary>
     /// 私有访问修饰符配置器
     /// </summary>
-    public KeywordOptionConfigurator<NamespaceOption> Private  => KeywordConfigurator.Private;
+    public KeywordOptionConfigurator<NamespaceOption> Private => KeywordConfigurator.Private;
 
 }
 
