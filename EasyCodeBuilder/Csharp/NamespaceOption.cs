@@ -22,23 +22,25 @@ public class NamespaceOption : CodeOption
         return cb.CodeBlock(OnChildren, $"namespace {Name}");
     }
 
-    private KeywordOptionConfigurator<NamespaceOption> KeywordConfigurator => new(this);
+    /// <summary>
+    /// 访问修饰符配置器
+    /// </summary>
+    public KeywordOptionConfigurator<NamespaceOption> Has => new(this);
 
     /// <summary>
     /// 公共访问修饰符配置器
     /// </summary>
-    public KeywordOptionConfigurator<NamespaceOption> Public => KeywordConfigurator.Public;
+    public KeywordOptionConfigurator<NamespaceOption> Public => Has.Public;
 
     /// <summary>
     /// 内部访问修饰符配置器
     /// </summary>
-    public KeywordOptionConfigurator<NamespaceOption> Internal => KeywordConfigurator.Internal;
+    public KeywordOptionConfigurator<NamespaceOption> Internal => Has.Internal;
 
     /// <summary>
     /// 私有访问修饰符配置器
     /// </summary>
-    public KeywordOptionConfigurator<NamespaceOption> Private => KeywordConfigurator.Private;
-
+    public KeywordOptionConfigurator<NamespaceOption> Private => Has.Private;
 }
 
 /// <summary>
@@ -64,9 +66,8 @@ public static class NameSpaceOptionsExtensions
     /// <param name="ns"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static NamespaceOption Type(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddChild(configure);
-
+    public static NamespaceOption Type(this NamespaceOption ns, Action<TypeOption> configure) =>
+        ns.AddChild(configure);
 
     /// <summary>
     /// add class into namespace
@@ -74,12 +75,14 @@ public static class NameSpaceOptionsExtensions
     /// <param name="ns"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static NamespaceOption Class(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddChild((TypeOption type) => {
-            type.TypeKind = TypeOption.Type.Class;
-            configure(type);
-        });
-
+    public static NamespaceOption Class(this NamespaceOption ns, Action<TypeOption> configure) =>
+        ns.AddChild(
+            (TypeOption type) =>
+            {
+                type.TypeKind = TypeOption.Type.Class;
+                configure(type);
+            }
+        );
 
     /// <summary>
     /// add struct into namespace
@@ -87,11 +90,14 @@ public static class NameSpaceOptionsExtensions
     /// <param name="ns"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static NamespaceOption Struct(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddChild((TypeOption type) => {
-            type.TypeKind = TypeOption.Type.Struct;
-            configure(type);
-        });
+    public static NamespaceOption Struct(this NamespaceOption ns, Action<TypeOption> configure) =>
+        ns.AddChild(
+            (TypeOption type) =>
+            {
+                type.TypeKind = TypeOption.Type.Struct;
+                configure(type);
+            }
+        );
 
     /// <summary>
     /// add enum into namespace
@@ -99,9 +105,12 @@ public static class NameSpaceOptionsExtensions
     /// <param name="ns"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static NamespaceOption Enum(this NamespaceOption ns, Action<TypeOption> configure)
-        => ns.AddChild((TypeOption type) => {
-            type.TypeKind = TypeOption.Type.Enum;
-            configure(type);
-        });
+    public static NamespaceOption Enum(this NamespaceOption ns, Action<TypeOption> configure) =>
+        ns.AddChild(
+            (TypeOption type) =>
+            {
+                type.TypeKind = TypeOption.Type.Enum;
+                configure(type);
+            }
+        );
 }

@@ -7,12 +7,12 @@ namespace Fengb3.EasyCodeBuilder.Csharp.OptionConfigurations;
 /// </summary>
 public static class KeywordConfiguratorExtensions
 {
-
     #region private methods
 
     private static void ApplyKeywords<TParent>(
         KeywordOptionConfigurator<TParent> configurator,
-        Action<string> apply)
+        Action<string> apply
+    )
         where TParent : CodeOption
     {
         configurator.Configure(apply);
@@ -21,11 +21,13 @@ public static class KeywordConfiguratorExtensions
     private static void AddConfiguredChild<TParent, TChild>(
         TParent parent,
         Action<TChild> configureKeywords,
-        Action<TChild> configure)
+        Action<TChild> configure
+    )
         where TParent : CodeOption
         where TChild : CodeOption, new()
     {
-        parent.AddChild<TParent, TChild>(child => {
+        parent.AddChild<TParent, TChild>(child =>
+        {
             configureKeywords(child);
             configure(child);
         });
@@ -34,25 +36,30 @@ public static class KeywordConfiguratorExtensions
     private static void AddType(
         KeywordOptionConfigurator<NamespaceOption> configurator,
         TypeOption.Type typeKind,
-        Action<TypeOption> configure)
+        Action<TypeOption> configure
+    )
     {
         AddConfiguredChild<NamespaceOption, TypeOption>(
             configurator.Parent,
-            to => {
+            to =>
+            {
                 to.TypeKind = typeKind;
                 ApplyKeywords(configurator, keyword => to.WithKeyword(keyword));
             },
-            configure);
+            configure
+        );
     }
 
     private static void AddMethod(
         KeywordOptionConfigurator<TypeOption> configurator,
-        Action<MethodOption> configure)
+        Action<MethodOption> configure
+    )
     {
         AddConfiguredChild<TypeOption, MethodOption>(
             configurator.Parent,
             mo => ApplyKeywords(configurator, keyword => mo.WithKeyword(keyword)),
-            configure);
+            configure
+        );
     }
     #endregion
 
@@ -64,7 +71,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">类选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Class(this KeywordOptionConfigurator<NamespaceOption> configurator, Func<TypeOption, TypeOption> configure)
+    public static NamespaceOption Class(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Func<TypeOption, TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Class, to => configure(to));
         return configurator.Parent;
@@ -76,7 +86,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">类选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Class(this KeywordOptionConfigurator<NamespaceOption> configurator, Action<TypeOption> configure)
+    public static NamespaceOption Class(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Action<TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Class, configure);
         return configurator.Parent;
@@ -88,7 +101,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">结构体选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Struct(this KeywordOptionConfigurator<NamespaceOption> configurator, Func<TypeOption, TypeOption> configure)
+    public static NamespaceOption Struct(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Func<TypeOption, TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Struct, to => configure(to));
         return configurator.Parent;
@@ -100,7 +116,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">结构体选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Struct(this KeywordOptionConfigurator<NamespaceOption> configurator, Action<TypeOption> configure)
+    public static NamespaceOption Struct(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Action<TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Struct, configure);
         return configurator.Parent;
@@ -112,7 +131,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">枚举选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Enum(this KeywordOptionConfigurator<NamespaceOption> configurator, Func<TypeOption, TypeOption> configure)
+    public static NamespaceOption Enum(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Func<TypeOption, TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Enum, to => configure(to));
         return configurator.Parent;
@@ -124,14 +146,17 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">枚举选项配置委托</param>
     /// <returns>命名空间选项</returns>
-    public static NamespaceOption Enum(this KeywordOptionConfigurator<NamespaceOption> configurator, Action<TypeOption> configure)
+    public static NamespaceOption Enum(
+        this KeywordOptionConfigurator<NamespaceOption> configurator,
+        Action<TypeOption> configure
+    )
     {
         AddType(configurator, TypeOption.Type.Enum, configure);
         return configurator.Parent;
     }
 
     #endregion
-    
+
     #region Add member to type
 
     /// <summary>
@@ -140,7 +165,10 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">方法选项配置委托</param>
     /// <returns>类型选项</returns>
-    public static TypeOption Method(this KeywordOptionConfigurator<TypeOption> configurator, Func<MethodOption, MethodOption> configure)
+    public static TypeOption Method(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Func<MethodOption, MethodOption> configure
+    )
     {
         AddMethod(configurator, mo => configure(mo));
         return configurator.Parent;
@@ -152,54 +180,73 @@ public static class KeywordConfiguratorExtensions
     /// <param name="configurator">关键字配置器</param>
     /// <param name="configure">方法选项配置委托</param>
     /// <returns>类型选项</returns>
-    public static TypeOption Method(this KeywordOptionConfigurator<TypeOption> configurator, Action<MethodOption> configure)
+    public static TypeOption Method(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Action<MethodOption> configure
+    )
     {
         AddMethod(configurator, configure);
         return configurator.Parent;
     }
-    
+
     /// <summary>
     /// 添加自动属性
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static TypeOption AutoProperty(this KeywordOptionConfigurator<TypeOption> configurator, Func<AutoPropertyOption, AutoPropertyOption> configure)
+    public static TypeOption AutoProperty(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Func<AutoPropertyOption, AutoPropertyOption> configure
+    )
     {
-        configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po => {
+        configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
+        {
             ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configure(po);
         });
         return configurator.Parent;
     }
-    
+
     /// <summary>
     /// 添加自动属性
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static TypeOption AutoProperty(this KeywordOptionConfigurator<TypeOption> configurator, Action<AutoPropertyOption> configure)
+    public static TypeOption AutoProperty(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Action<AutoPropertyOption> configure
+    )
     {
-        configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po => {
+        configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
+        {
             ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configure(po);
         });
         return configurator.Parent;
     }
-    
-    public static TypeOption Field(this KeywordOptionConfigurator<TypeOption> configurator, Func<FieldOption, FieldOption> configure)
+
+    public static TypeOption Field(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Func<FieldOption, FieldOption> configure
+    )
     {
-        configurator.Parent.AddChild<TypeOption, FieldOption>(fo => {
+        configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
+        {
             ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
             configure(fo);
         });
         return configurator.Parent;
     }
-    
-    public static TypeOption Field(this KeywordOptionConfigurator<TypeOption> configurator, Action<FieldOption> configure)
+
+    public static TypeOption Field(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Action<FieldOption> configure
+    )
     {
-        configurator.Parent.AddChild<TypeOption, FieldOption>(fo => {
+        configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
+        {
             ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
             configure(fo);
         });

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 // using Fengb3.EasyCodeBuilder.Csharp.Abstraction;
 
 namespace Fengb3.EasyCodeBuilder.Csharp;
@@ -13,7 +14,6 @@ namespace Fengb3.EasyCodeBuilder.Csharp;
 /// <typeparam name="TParent">父选项类型</typeparam>
 public class KeywordOptionConfigurator<TParent>(TParent parent)
     where TParent : CodeOption
-
 {
     /// <summary>
     /// 父选项
@@ -105,7 +105,7 @@ public class KeywordOptionConfigurator<TParent>(TParent parent)
             return this;
         }
     }
-    
+
     /// <summary>
     /// 添加 readonly 关键字
     /// </summary>
@@ -136,6 +136,6 @@ public class KeywordOptionConfigurator<TParent>(TParent parent)
     /// <param name="keywordSetter"></param>
     public void Configure(Action<string[]> keywordSetter)
     {
-        keywordSetter(Keywords.ToArray());
+        keywordSetter([.. Keywords]);
     }
 }

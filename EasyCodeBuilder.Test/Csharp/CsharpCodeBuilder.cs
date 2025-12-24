@@ -11,19 +11,20 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
     {
         var code = Create()
             .Using("System", "System.Collections.Generic")
-            .Namespace(ns => {
+            .Namespace(ns =>
+            {
                 ns.Name = "MyNamespace";
             })
             .Build();
 
         const string expected = """
-                                using System;
-                                using System.Collections.Generic;
+            using System;
+            using System.Collections.Generic;
 
-                                namespace MyNamespace
-                                {
-                                }                          
-                                """;
+            namespace MyNamespace
+            {
+            }                          
+            """;
 
         Assert.Equal(expected.Trim(), code.Trim());
 
@@ -34,16 +35,17 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
     public void TestClassInNamespace()
     {
         var code = Create()
-            .AddChild<CodeOption, NamespaceOption>(ns => {
+            .AddChild<CodeOption, NamespaceOption>(ns =>
+            {
                 ns.Name = "MyNamespace";
-                ns.Class(to => {
+                ns.Class(to =>
+                {
                     to.Name = "MyClass";
                 });
             })
             .Build();
 
-        var expected =
-            """
+        var expected = """
             namespace MyNamespace
             {
               class MyClass
@@ -64,16 +66,13 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
             .WithTypeKind(TypeOption.Type.Class)
             .WithName("MyClass")
             .WithKeywords("public")
-            .AutoProperty(po => {
-                po
-                    .WithType("string")
-                    .WithName("MyProperty")
-                    .WithKeyword("public");
+            .AutoProperty(po =>
+            {
+                po.WithType("string").WithName("MyProperty").WithKeyword("public");
             })
             .Build();
 
-        var expected =
-            """
+        var expected = """
             public class MyClass
             {
               public string MyProperty { get; set; }
@@ -84,7 +83,7 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 
         testOutputHelper.WriteLine(code);
     }
-        
+
     [Fact]
     public void TestConstructorInClass()
     {
@@ -97,16 +96,14 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
             .WithTypeKind(TypeOption.Type.Class)
             .WithName("MyClass")
             .WithKeywords("public")
-            .Constructor(ctor => {
-                ctor.WithKeyword("public")
-                    .WithParameter("string name")
-                    .WithParameter("int age");
+            .Constructor(ctor =>
+            {
+                ctor.WithKeyword("public").WithParameter("string name").WithParameter("int age");
             });
-            
+
         var code = classOption.Build();
 
-        var expected =
-            """
+        var expected = """
             public class MyClass
             {
               public MyClass(string name, int age)
@@ -125,17 +122,16 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
             .WithName("MyMethod")
             .WithReturnType("void")
             .WithKeyword("public")
-            .For(@for => {
-                @for
-                    .WithInitializer("int i = 0")
+            .For(@for =>
+            {
+                @for.WithInitializer("int i = 0")
                     .WithCondition("i < 10")
                     .WithIterator("i++")
                     .AppendLine("Console.WriteLine(i);");
             })
             .Build();
 
-        var expected =
-            """
+        var expected = """
             public void MyMethod()
             {
               for (int i = 0; i < 10; i++)
@@ -158,13 +154,16 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 
         method.AppendLine("var value = GetValue();");
 
-        method.Switch(@switch => {
+        method.Switch(@switch =>
+        {
             @switch.Expression = "value";
-            @switch.Case(@case => {
+            @switch.Case(@case =>
+            {
                 @case.Value = "1";
                 @case.AppendLine("""return "One";""");
             });
-            @switch.Case(@case => {
+            @switch.Case(@case =>
+            {
                 @case.Value = "2";
                 @case.AppendLine("""return "Two";""");
             });
@@ -173,8 +172,7 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 
         var methodCode = method.Build();
 
-        var expected =
-            """
+        var expected = """
             public string CheckValue()
             {
               var value = GetValue();
@@ -1249,8 +1247,7 @@ public class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
 //         Assert.Contains("finally", result);
 //         Assert.Contains("Cleanup();", result);
 //          }
-//  
+//
 //      #endregion
 //  }
 // }
-

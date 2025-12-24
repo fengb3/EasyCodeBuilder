@@ -11,6 +11,7 @@ namespace EasyCodeBuilder.Test.Csharp;
 public class ReadmeExamplesVerificationTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
+
     public ReadmeExamplesVerificationTests(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
@@ -22,24 +23,18 @@ public class ReadmeExamplesVerificationTests
         // This verifies the "Basic Usage" example in README
         var code = Code.Create()
             .Using("System")
-            .Namespace(ns => {
+            .Namespace(ns =>
+            {
                 ns.Name = "MyProject";
-                ns.Public.Class(cls => {
-                    cls.WithName("Person");
-                    cls.Public.AutoProperty(p => p
-                        .WithType("string")
-                        .WithName("Name")
-                    );
-                    cls.Public.AutoProperty(p => p
-                        .WithType("int")
-                        .WithName("Age")
-                    );
-                });
+                ns.Public.Class(clss =>
+                    clss.WithName("Person")
+                        .Public.AutoProperty(p => p.WithType("string").WithName("Name"))
+                        .Public.AutoProperty(p => p.WithType("int").WithName("Age"))
+                );
             })
             .Build();
 
-        const string expected =
-            """
+        const string expected = """
             using System;
 
             namespace MyProject
@@ -62,22 +57,25 @@ public class ReadmeExamplesVerificationTests
         // This verifies the "Generate a Class with Methods" example in README
         var code = Code.Create()
             .Using("System")
-            .Namespace(ns => {
+            .Namespace(ns =>
+            {
                 ns.Name = "MyApp";
-                ns.Public.Class(cls => {
-                    cls.WithName("Calculator");
-                    cls.Public.Method(method => {
-                        method.WithName("Add")
-                              .WithReturnType("int")
-                              .WithParameters("int a", "int b")
-                              .AppendLine("return a + b;");
-                    });
+                ns.Public.Class(cls =>
+                {
+                    cls.WithName("Calculator")
+                        .Public.Method(method =>
+                        {
+                            method
+                                .WithName("Add")
+                                .WithReturnType("int")
+                                .WithParameters("int a", "int b")
+                                .AppendLine("return a + b;");
+                        });
                 });
             })
             .Build();
 
-        const string expected =
-            """
+        const string expected = """
             using System;
 
             namespace MyApp
@@ -102,14 +100,14 @@ public class ReadmeExamplesVerificationTests
         // This verifies the first "Using Keyword Configurator" example in README
         var @namespace = new NamespaceOption()
             .WithName("MyNamespace")
-            .Public.Class(cls => {
+            .Public.Class(cls =>
+            {
                 cls.WithName("MyClass");
             });
 
         var code = @namespace.Build();
 
-        const string expected =
-            """
+        const string expected = """
             namespace MyNamespace
             {
               public class MyClass
@@ -127,18 +125,16 @@ public class ReadmeExamplesVerificationTests
     {
         // This verifies the second "Using Keyword Configurator" example in README
         var @class = Code.Create()
-            .Class(cls => cls
-                .WithName("MyClass")
-                .Public.AutoProperty(prop => prop
-                    .WithName("MyProperty")
-                    .WithType(typeof(int).FullName ?? "int")
-                )
+            .Class(cls =>
+                cls.WithName("MyClass")
+                    .Public.AutoProperty(prop =>
+                        prop.WithName("MyProperty").WithType(typeof(int).FullName ?? "int")
+                    )
             );
 
         var classCode = @class.Build();
 
-        const string expected =
-            """
+        const string expected = """
             class MyClass
             {
               public System.Int32 MyProperty { get; set; }
@@ -158,7 +154,8 @@ public class ReadmeExamplesVerificationTests
             .WithName("Person")
             .WithKeyword("public");
 
-        classOption.Constructor(ctor => {
+        classOption.Constructor(ctor =>
+        {
             ctor.WithKeyword("public")
                 .WithParameter("string name")
                 .WithParameter("int age")
@@ -166,18 +163,13 @@ public class ReadmeExamplesVerificationTests
                 .AppendLine("Age = age;");
         });
 
-        classOption.Public.AutoProperty(p => p
-            .WithType("string")
-            .WithName("Name"));
+        classOption.Public.AutoProperty(p => p.WithType("string").WithName("Name"));
 
-        classOption.Public.AutoProperty(p => p
-            .WithType("int")
-            .WithName("Age"));
+        classOption.Public.AutoProperty(p => p.WithType("int").WithName("Age"));
 
         var code = classOption.Build();
 
-        const string expected =
-            """
+        const string expected = """
             public class Person
             {
               public Person(string name, int age)
@@ -202,21 +194,23 @@ public class ReadmeExamplesVerificationTests
             .WithTypeKind(TypeOption.Type.Class)
             .WithName("NumberPrinter");
 
-        classOption.Public.Method(method => {
-            method.WithName("PrintNumbers")
-                  .WithReturnType("void")
-                  .For(@for => {
-                      @for.WithInitializer("int i = 0")
-                          .WithCondition("i < 10")
-                          .WithIterator("i++")
-                          .AppendLine("Console.WriteLine(i);");
-                  });
+        classOption.Public.Method(method =>
+        {
+            method
+                .WithName("PrintNumbers")
+                .WithReturnType("void")
+                .For(@for =>
+                {
+                    @for.WithInitializer("int i = 0")
+                        .WithCondition("i < 10")
+                        .WithIterator("i++")
+                        .AppendLine("Console.WriteLine(i);");
+                });
         });
 
         var code = classOption.Build();
 
-        const string expected =
-            """
+        const string expected = """
             class NumberPrinter
             {
               public void PrintNumbers()
@@ -241,31 +235,30 @@ public class ReadmeExamplesVerificationTests
             .WithTypeKind(TypeOption.Type.Class)
             .WithName("DayHelper");
 
-        classOption.Public.Method(method => {
-            method.WithName("GetDayName")
-                  .WithReturnType("string")
-                  .WithParameters("int day");
+        classOption.Public.Method(method =>
+        {
+            method.WithName("GetDayName").WithReturnType("string").WithParameters("int day");
 
-            method.Switch(@switch => {
+            method.Switch(@switch =>
+            {
                 @switch.Expression = "day";
-                @switch.Case(@case => {
+                @switch.Case(@case =>
+                {
                     @case.Value = "1";
                     @case.AppendLine("return \"Monday\";");
                 });
-                @switch.Case(@case => {
+                @switch.Case(@case =>
+                {
                     @case.Value = "2";
                     @case.AppendLine("return \"Tuesday\";");
                 });
-                @switch.Default(@default =>
-                    @default.AppendLine("return \"Unknown\";")
-                );
+                @switch.Default(@default => @default.AppendLine("return \"Unknown\";"));
             });
         });
 
         var code = classOption.Build();
 
-        const string expected =
-            """
+        const string expected = """
             class DayHelper
             {
               public string GetDayName(int day)
