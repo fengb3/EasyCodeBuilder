@@ -9,45 +9,19 @@ public static class KeywordConfiguratorExtensions
 {
     #region private methods
 
-    private static void ApplyKeywords<TParent>(
-        KeywordOptionConfigurator<TParent> configurator,
-        Action<string> apply
-    )
-        where TParent : CodeOption
-    {
-        configurator.Configure(apply);
-    }
-
-    private static void AddConfiguredChild<TParent, TChild>(
-        TParent parent,
-        Action<TChild> configureKeywords,
-        Action<TChild> configure
-    )
-        where TParent : CodeOption
-        where TChild : CodeOption, new()
-    {
-        parent.AddChild<TParent, TChild>(child =>
-        {
-            configureKeywords(child);
-            configure(child);
-        });
-    }
-
     private static void AddType(
         KeywordOptionConfigurator<NamespaceOption> configurator,
         TypeOption.Type typeKind,
         Action<TypeOption> configure
     )
     {
-        AddConfiguredChild<NamespaceOption, TypeOption>(
-            configurator.Parent,
-            to =>
-            {
-                to.TypeKind = typeKind;
-                ApplyKeywords(configurator, keyword => to.WithKeyword(keyword));
-            },
-            configure
-        );
+        configurator.Parent.AddChild<NamespaceOption, TypeOption>(to =>
+        {
+            to.TypeKind = typeKind;
+            // ApplyKeywords(configurator, keyword => to.WithKeyword(keyword));
+            configurator.Configure(keyword => to.WithKeyword(keyword));
+            configure(to);
+        });
     }
 
     private static void AddMethod(
@@ -55,11 +29,12 @@ public static class KeywordConfiguratorExtensions
         Action<MethodOption> configure
     )
     {
-        AddConfiguredChild<TypeOption, MethodOption>(
-            configurator.Parent,
-            mo => ApplyKeywords(configurator, keyword => mo.WithKeyword(keyword)),
-            configure
-        );
+        configurator.Parent.AddChild<TypeOption, MethodOption>(mo =>
+        {
+            // ApplyKeywords(configurator, keyword => mo.WithKeyword(keyword));
+            configurator.Configure(keyword => mo.WithKeyword(keyword));
+            configure(mo);
+        });
     }
     #endregion
 
@@ -202,7 +177,8 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
         {
-            ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });
         return configurator.Parent;
@@ -221,7 +197,8 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
         {
-            ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });
         return configurator.Parent;
@@ -234,7 +211,8 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
         {
-            ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
+            // ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
+            configurator.Configure(keyword => fo.WithKeyword(keyword));
             configure(fo);
         });
         return configurator.Parent;
@@ -247,7 +225,8 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
         {
-            ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
+            // ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
+            configurator.Configure(keyword => fo.WithKeyword(keyword));
             configure(fo);
         });
         return configurator.Parent;
