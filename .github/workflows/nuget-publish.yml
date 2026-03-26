@@ -154,7 +154,7 @@ jobs:
         tag_name: v${{ steps.version.outputs.VERSION }}
         name: Release ${{ steps.version.outputs.VERSION }}
         body: |
-          ## � Release ${{ steps.version.outputs.VERSION }}
+          ## 🎉 Release ${{ steps.version.outputs.VERSION }}
           
           ### 📦 NuGet Package
           - **Package**: [Fengb3.EasyCodeBuilder](https://www.nuget.org/packages/Fengb3.EasyCodeBuilder/)
