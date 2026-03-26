@@ -14,12 +14,19 @@ public class CodeOption
     /// <returns>代码构建器</returns>
     public virtual CodeBuilder Build(CodeBuilder cb)
     {
+        BeforeChildren?.Invoke(cb);
         OnChildren?.Invoke(cb);
         return cb;
     }
     
     /// <summary>
+    /// 在子节点构建之前执行的委托
+    /// </summary>
+    public CodeRenderFragment? BeforeChildren = null;
+    
+    /// <summary>
     /// 子节点构建委托
     /// </summary>
     public CodeRenderFragment? OnChildren = null;
+    
 }

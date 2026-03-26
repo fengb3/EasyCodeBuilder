@@ -38,6 +38,7 @@ public class MethodOption : CodeOption
         var keywords   = string.Join(" ", CsharpKeywordOrdering.OrderForMember(Keywords));
         var parameters = string.Join(", ", Parameters);
 
+        BeforeChildren?.Invoke(cb);
         cb.CodeBlock(OnChildren, $"{keywords} {ReturnType} {Name}({parameters})".Trim());
 
         return cb;

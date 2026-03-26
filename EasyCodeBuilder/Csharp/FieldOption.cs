@@ -47,6 +47,8 @@ public class FieldOption : CodeOption
 
         if (string.IsNullOrWhiteSpace(head))
             return cb;
+        
+        BeforeChildren?.Invoke(cb);
 
         if (!string.IsNullOrWhiteSpace(Initializer))
         {

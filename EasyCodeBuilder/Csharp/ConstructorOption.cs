@@ -28,7 +28,8 @@ public class ConstructorOption : CodeOption
     {
         var keywords   = string.Join(" ", CsharpKeywordOrdering.OrderForMember(Keywords));
         var parameters = string.Join(", ", Parameters);
-
+        
+        BeforeChildren?.Invoke(cb);
         cb.CodeBlock(OnChildren, $"{keywords} {Name}({parameters})".Trim());
         return cb;
     }

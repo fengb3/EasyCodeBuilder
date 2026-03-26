@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Fengb3.EasyCodeBuilder;
@@ -227,13 +228,13 @@ public class CodeBuilder
     /// </summary>
     /// <param name="lines">多行代码</param>
     /// <returns>当前构建器实例</returns>
-    public CodeBuilder AppendLines(params string[] lines)
+    public CodeBuilder AppendLines(params IEnumerable<string> lines)
     {
         foreach (var line in lines)
         {
             AppendLine(line);
         }
-
+    
         return this;
     }
 

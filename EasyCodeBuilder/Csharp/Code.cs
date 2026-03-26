@@ -8,7 +8,6 @@ namespace Fengb3.EasyCodeBuilder.Csharp;
 /// </summary>
 public static partial class Code
 {
-
     /// <summary>
     /// 
     /// </summary>
@@ -25,9 +24,7 @@ public static partial class Code
     {
         foreach (var u in usings)
         {
-            option.AddChild<CodeOption, UsingOption>(uo => {
-                uo.Name = u;
-            });
+            option.AddChild<CodeOption, UsingOption>(uo => { uo.Name = u; });
         }
 
         // keep existing behavior: add a blank line after usings
@@ -45,7 +42,8 @@ public static partial class Code
     /// using static {typeOrNamespace};
     /// </summary>
     public static CodeOption UsingStatic(this CodeOption option, string typeOrNamespace)
-        => option.AddChild<CodeOption, UsingOption>(uo => {
+        => option.AddChild<CodeOption, UsingOption>(uo =>
+        {
             uo.Name = typeOrNamespace;
             uo.IsStatic = true;
         });
@@ -54,7 +52,8 @@ public static partial class Code
     /// using {alias} = {typeOrNamespace};
     /// </summary>
     public static CodeOption UsingAlias(this CodeOption option, string alias, string typeOrNamespace)
-        => option.AddChild<CodeOption, UsingOption>(uo => {
+        => option.AddChild<CodeOption, UsingOption>(uo =>
+        {
             uo.Alias = alias;
             uo.Name = typeOrNamespace;
         });
@@ -63,7 +62,8 @@ public static partial class Code
     /// global using {typeOrNamespace};
     /// </summary>
     public static CodeOption GlobalUsing(this CodeOption option, string typeOrNamespace)
-        => option.AddChild<CodeOption, UsingOption>(uo => {
+        => option.AddChild<CodeOption, UsingOption>(uo =>
+        {
             uo.Keywords.Add("global");
             uo.Name = typeOrNamespace;
         });
@@ -72,7 +72,8 @@ public static partial class Code
     /// global using static {typeOrNamespace};
     /// </summary>
     public static CodeOption GlobalUsingStatic(this CodeOption option, string typeOrNamespace)
-        => option.AddChild<CodeOption, UsingOption>(uo => {
+        => option.AddChild<CodeOption, UsingOption>(uo =>
+        {
             uo.Keywords.Add("global");
             uo.Name = typeOrNamespace;
             uo.IsStatic = true;
@@ -86,7 +87,8 @@ public static partial class Code
     /// <typeparam name="TParent"></typeparam>
     /// <typeparam name="TChild"></typeparam>
     /// <returns></returns>
-    public static TParent AddChild<TParent, TChild>(this TParent parent, Action<TChild> configureChild) where TParent : CodeOption where TChild : CodeOption, new()
+    public static TParent AddChild<TParent, TChild>(this TParent parent, Action<TChild> configureChild)
+        where TParent : CodeOption where TChild : CodeOption, new()
     {
         var child = new TChild();
         configureChild?.Invoke(child);
@@ -101,9 +103,9 @@ public static partial class Code
     /// <typeparam name="TParent"></typeparam>
     /// <typeparam name="TChild"></typeparam>
     /// <returns></returns>
-    public static TParent AddChild<TParent, TChild>(this TParent parent, TChild child) where TParent : CodeOption where TChild : CodeOption
+    public static TParent AddChild<TParent, TChild>(this TParent parent, TChild child)
+        where TParent : CodeOption where TChild : CodeOption
     {
-        // configureChild?.Invoke(child);
         parent.OnChildren += child.Build;
         return parent;
     }
@@ -128,7 +130,7 @@ public static partial class Code
     /// <returns></returns>
     public static CodeOption Namespace(this CodeOption option, Action<NamespaceOption> configure)
         => option.AddChild(configure);
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -137,6 +139,55 @@ public static partial class Code
     /// <returns></returns>
     public static CodeOption Class(this CodeOption option, Action<TypeOption> configure)
         => option.AddChild(configure);
+
+
+    /// <summary>
+    /// add attribute to an element
+    /// </summary>
+    /// <param name="option"></param>
+    /// <param name="attributes"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static T WithAttributes<T>(this T option, params string[] attributes) where T : CodeOption
+    {
+        option.BeforeChildren += cb => cb.AppendLines(attributes.Select(attr => $"[{attr}]"));
+        return option;
+    }
+    
+    /// <summary>
+    /// add XML doc to an element
+    /// </summary>
+    /// <param name="option"></param>
+    /// <param name="configure"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static T WithXmlDoc<T>(this T option, Action<XmlDocOption> configure) where T : CodeOption
+    {
+        option.BeforeChildren += cb =>
+        {
+            var xmlDocOption = new XmlDocOption();
+            configure(xmlDocOption);
+            xmlDocOption.Build(cb);
+            return cb;
+        };
+        return option;
+    }
+
+
+    /// <summary>
+    /// Add single or multiple lines to a code block 
+    /// </summary>
+    /// <param name="option"></param>
+    /// <param name="lines"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static T AppendLines<T>(this T option, params string[] lines) where T : CodeOption
+    {
+        foreach (var line in lines)
+            option.AppendLine(line);
+
+        return option;
+    }
 
     /// <summary>
     /// 构建代码

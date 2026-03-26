@@ -66,7 +66,8 @@ public class TypeOption : CodeOption
         {
             Name += " : " + string.Join(", ", BaseTypes);
         }
-
+        
+        BeforeChildren?.Invoke(cb);
         cb.CodeBlock(OnChildren, $"{keywords} {typeKeyword} {Name}".Trim());
         return cb;
     }
