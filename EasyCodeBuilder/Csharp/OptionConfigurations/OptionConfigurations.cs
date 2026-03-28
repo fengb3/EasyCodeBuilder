@@ -204,6 +204,12 @@ public static class KeywordConfiguratorExtensions
         return configurator.Parent;
     }
 
+    /// <summary>
+    /// add field into type
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
     public static TypeOption Field(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Func<FieldOption, FieldOption> configure
@@ -218,6 +224,12 @@ public static class KeywordConfiguratorExtensions
         return configurator.Parent;
     }
 
+    /// <summary>
+    /// add field into type
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
     public static TypeOption Field(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Action<FieldOption> configure
@@ -228,6 +240,47 @@ public static class KeywordConfiguratorExtensions
             // ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
             configurator.Configure(keyword => fo.WithKeyword(keyword));
             configure(fo);
+        });
+        return configurator.Parent;
+    }
+
+
+    /// <summary>
+    /// add property into type
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static TypeOption Property(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Func<PropertyOption, PropertyOption> configure
+    )
+    {
+        configurator.Parent.AddChild<TypeOption, PropertyOption>(po =>
+        {
+            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            configurator.Configure(keyword => po.WithKeyword(keyword));
+            configure(po);
+        });
+        return configurator.Parent;
+    }
+
+    /// <summary>
+    /// add property into type
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static TypeOption Property(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Action<PropertyOption> configure
+    )
+    {
+        configurator.Parent.AddChild<TypeOption, PropertyOption>(po =>
+        {
+            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
+            configurator.Configure(keyword => po.WithKeyword(keyword));
+            configure(po);
         });
         return configurator.Parent;
     }
