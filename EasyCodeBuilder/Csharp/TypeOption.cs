@@ -57,18 +57,34 @@ public class TypeOption : CodeOption
     /// </summary>
     public string Name { get; set; } = "UnnamedType";
 
+    /// <summary>
+    /// 主构造函数参数列表
+    /// </summary>
+    public ICollection<string> PrimaryConstructorParameters { get; set; } = new List<string>();
+
     /// <inheritdoc />
     public override CodeBuilder Build(CodeBuilder cb)
     {
         var keywords    = string.Join(" ", CsharpKeywordOrdering.OrderForType(Keywords));
         var typeKeyword = TypeKind.ToString().ToLower();
+
+        // 构建类型声明
+        var declaration = $"{keywords} {typeKeyword} {Name}".Trim();
+
+        // 添加主构造函数参数
+        if (PrimaryConstructorParameters.Count > 0)
+        {
+            declaration += "(" + string.Join(", ", PrimaryConstructorParameters) + ")";
+        }
+
+        // 添加基类/接口
         if (BaseTypes.Count > 0)
         {
-            Name += " : " + string.Join(", ", BaseTypes);
+            declaration += " : " + string.Join(", ", BaseTypes);
         }
-        
+
         BeforeChildren?.Invoke(cb);
-        cb.CodeBlock(OnChildren, $"{keywords} {typeKeyword} {Name}".Trim());
+        cb.CodeBlock(OnChildren, declaration);
         return cb;
     }
 
@@ -162,6 +178,30 @@ public static class TypeOptionExtensions
     {
         foreach (var baseType in baseTypes)
             type.BaseTypes.Add(baseType);
+        return type;
+    }
+
+    /// <summary>
+    /// 设置主构造函数参数
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="parameters">参数列表</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption WithPrimaryConstructor(this TypeOption type, params string[] parameters)
+    {
+        type.PrimaryConstructorParameters = parameters;
+        return type;
+    }
+
+    /// <summary>
+    /// 添加主构造函数参数
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="parameter">参数</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption AddPrimaryConstructorParameter(this TypeOption type, string parameter)
+    {
+        type.PrimaryConstructorParameters.Add(parameter);
         return type;
     }
 

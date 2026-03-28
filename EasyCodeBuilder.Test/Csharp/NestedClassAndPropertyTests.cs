@@ -289,4 +289,127 @@ public class NestedClassAndPropertyTests(ITestOutputHelper testOutputHelper)
         Assert.Contains("public string InnerProperty", code);
         Assert.Contains("private string _innerField", code);
     }
+
+    #region Primary Constructor Tests
+
+    [Fact]
+    public void TestPrimaryConstructor()
+    {
+        var code = new TypeOption()
+            .WithTypeKind(TypeOption.Type.Class)
+            .WithName("MyClass")
+            .WithKeywords("public")
+            .WithPrimaryConstructor("string name", "int age")
+            .AutoProperty(p => p.WithType("string").WithName("Name").WithKeyword("public"))
+            .Build();
+
+        var expected = """
+                       public class MyClass(string name, int age)
+                       {
+                         public string Name { get; set; }
+                       }
+                       """;
+
+        Assert.Equal(Normalize(expected), Normalize(code));
+        testOutputHelper.WriteLine(code);
+    }
+
+    [Fact]
+    public void TestPrimaryConstructorWithInheritance()
+    {
+        var code = new TypeOption()
+            .WithTypeKind(TypeOption.Type.Class)
+            .WithName("DerivedClass")
+            .WithKeywords("public")
+            .WithPrimaryConstructor("string name", "int age")
+            .Inherit("BaseClass")
+            .AutoProperty(p => p.WithType("string").WithName("Name").WithKeyword("public"))
+            .Build();
+
+        var expected = """
+                       public class DerivedClass(string name, int age) : BaseClass
+                       {
+                         public string Name { get; set; }
+                       }
+                       """;
+
+        Assert.Equal(Normalize(expected), Normalize(code));
+        testOutputHelper.WriteLine(code);
+    }
+
+    [Fact]
+    public void TestPrimaryConstructorWithInterface()
+    {
+        var code = new TypeOption()
+            .WithTypeKind(TypeOption.Type.Class)
+            .WithName("MyClass")
+            .WithKeywords("public")
+            .WithPrimaryConstructor("string value")
+            .Inherit("IInterface")
+            .Property(p => p
+                .WithType("string")
+                .WithName("Value")
+                .WithKeyword("public")
+                .AsExpressionBody()
+                .AppendLines("value")
+            )
+            .Build();
+
+        var expected = """
+                       public class MyClass(string value) : IInterface
+                       {
+                         public string Value => value;
+                       }
+                       """;
+
+        Assert.Equal(Normalize(expected), Normalize(code));
+        testOutputHelper.WriteLine(code);
+    }
+
+    [Fact]
+    public void TestPrimaryConstructorWithStruct()
+    {
+        var code = new TypeOption()
+            .WithTypeKind(TypeOption.Type.Struct)
+            .WithName("Point")
+            .WithKeywords("public readonly")
+            .WithPrimaryConstructor("int x", "int y")
+            .AutoProperty(p => p.WithType("int").WithName("X").WithKeyword("public"))
+            .AutoProperty(p => p.WithType("int").WithName("Y").WithKeyword("public"))
+            .Build();
+
+        var expected = """
+                       public readonly struct Point(int x, int y)
+                       {
+                         public int X { get; set; }
+                         public int Y { get; set; }
+                       }
+                       """;
+
+        Assert.Equal(Normalize(expected), Normalize(code));
+        testOutputHelper.WriteLine(code);
+    }
+
+    [Fact]
+    public void TestAddPrimaryConstructorParameter()
+    {
+        var code = new TypeOption()
+            .WithTypeKind(TypeOption.Type.Class)
+            .WithName("MyClass")
+            .WithKeywords("public")
+            .AddPrimaryConstructorParameter("string name")
+            .AddPrimaryConstructorParameter("int age")
+            .Build();
+
+        var expected = """
+                       public class MyClass(string name, int age)
+                       {
+                       }
+                       """;
+
+        Assert.Equal(Normalize(expected), Normalize(code));
+        testOutputHelper.WriteLine(code);
+    }
+
+    #endregion
 }
