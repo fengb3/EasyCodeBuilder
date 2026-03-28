@@ -231,4 +231,40 @@ public static class TypeOptionExtensions
     /// <returns></returns>
     public static TypeOption Field(this TypeOption type, Action<FieldOption> configure)
         => type.AddChild(configure);
+
+    /// <summary>
+    /// 添加嵌套类
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="configure">嵌套类配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption NestedClass(this TypeOption type, Action<TypeOption> configure)
+        => type.AddChild(configure);
+
+    /// <summary>
+    /// 添加嵌套类
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="configure">嵌套类配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption NestedClass(this TypeOption type, Func<TypeOption, TypeOption> configure)
+        => type.NestedClass(c => { configure(c); });
+
+    /// <summary>
+    /// 添加属性（支持自定义 getter/setter）
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="configure">属性配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption Property(this TypeOption type, Action<PropertyOption> configure)
+        => type.AddChild(configure);
+
+    /// <summary>
+    /// 添加属性（支持自定义 getter/setter）
+    /// </summary>
+    /// <param name="type">类型选项</param>
+    /// <param name="configure">属性配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption Property(this TypeOption type, Func<PropertyOption, PropertyOption> configure)
+        => type.Property(p => { configure(p); });
 }
