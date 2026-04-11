@@ -62,9 +62,9 @@ public static class SwitchOptionExtensions
     /// <summary>
     /// set expression of switch
     /// </summary>
-    /// <param name="switchOption"></param>
-    /// <param name="expression"></param>
-    /// <returns></returns>
+    /// <param name="switchOption">The switch option.</param>
+    /// <param name="expression">The expression to switch on.</param>
+    /// <returns>The switch option, for fluent chaining.</returns>
     public static SwitchOption WithExpression(this SwitchOption switchOption, string expression)
     {
         switchOption.Expression = expression;
@@ -74,18 +74,18 @@ public static class SwitchOptionExtensions
     /// <summary>
     /// add case into switch
     /// </summary>
-    /// <param name="switchOption"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="switchOption">The switch option.</param>
+    /// <param name="configure">Action to configure the case.</param>
+    /// <returns>The switch option, for fluent chaining.</returns>
     public static SwitchOption Case(this SwitchOption switchOption, Action<CaesOption> configure)
         => switchOption.AddChild(configure);
 
     /// <summary>
     /// add default case into switch
     /// </summary>
-    /// <param name="switchOption"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="switchOption">The switch option.</param>
+    /// <param name="configure">Action to configure the default case.</param>
+    /// <returns>The switch option, for fluent chaining.</returns>
     public static SwitchOption Default(this SwitchOption switchOption, Action<DefaultCaseOption> configure)
         => switchOption.AddChild(configure);
 }

@@ -38,6 +38,7 @@ public class FieldOption : CodeOption
     /// </summary>
     public bool IsVar { get; set; } = false;
 
+    /// <inheritdoc />
     public override CodeBuilder Build(CodeBuilder cb)
     {
         var keywords = string.Join(" ", CsharpKeywordOrdering.OrderForMember(Keywords));
@@ -63,32 +64,64 @@ public class FieldOption : CodeOption
     }
 }
 
+/// <summary>
+/// Extension methods for <see cref="FieldOption"/>.
+/// </summary>
 public static class FieldOptionExtensions
 {
+    /// <summary>
+    /// Add a keyword to the field (e.g. "public", "readonly", "const"). Duplicates are ignored.
+    /// </summary>
+    /// <param name="option">The field option.</param>
+    /// <param name="keyword">The keyword to add.</param>
+    /// <returns>The field option, for fluent chaining.</returns>
     public static FieldOption WithKeyword(this FieldOption option, string keyword)
     {
         option.Keywords.Add(keyword);
         return option;
     }
 
+    /// <summary>
+    /// Set the field type (e.g. "int", "string").
+    /// </summary>
+    /// <param name="option">The field option.</param>
+    /// <param name="type">The type name.</param>
+    /// <returns>The field option, for fluent chaining.</returns>
     public static FieldOption WithType(this FieldOption option, string type)
     {
         option.Type = type;
         return option;
     }
 
+    /// <summary>
+    /// Set the field name.
+    /// </summary>
+    /// <param name="option">The field option.</param>
+    /// <param name="name">The field name.</param>
+    /// <returns>The field option, for fluent chaining.</returns>
     public static FieldOption WithName(this FieldOption option, string name)
     {
         option.Name = name;
         return option;
     }
 
+    /// <summary>
+    /// Set the field initializer expression (without trailing semicolon).
+    /// </summary>
+    /// <param name="option">The field option.</param>
+    /// <param name="initializer">The initializer expression (e.g. "new()", "1").</param>
+    /// <returns>The field option, for fluent chaining.</returns>
     public static FieldOption WithInitializer(this FieldOption option, string initializer)
     {
         option.Initializer = initializer;
         return option;
     }
 
+    /// <summary>
+    /// Generate "var" instead of an explicit type.
+    /// </summary>
+    /// <param name="option">The field option.</param>
+    /// <returns>The field option, for fluent chaining.</returns>
     public static FieldOption Var(this FieldOption option)
     {
         option.IsVar = true;

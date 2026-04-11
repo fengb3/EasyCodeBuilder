@@ -121,7 +121,7 @@ public class KeywordOptionConfigurator<TParent>(TParent parent)
     /// <summary>
     /// configure the keywords into the parent option
     /// </summary>
-    /// <param name="keywordSetter"></param>
+    /// <param name="keywordSetter">Action invoked once per collected keyword.</param>
     public void Configure(Action<string> keywordSetter)
     {
         foreach (var keyword in Keywords)
@@ -133,7 +133,7 @@ public class KeywordOptionConfigurator<TParent>(TParent parent)
     /// <summary>
     /// configure the keywords into the parent option
     /// </summary>
-    /// <param name="keywordSetter"></param>
+    /// <param name="keywordSetter">Action invoked with all collected keywords as an array.</param>
     public void Configure(Action<string[]> keywordSetter)
     {
         keywordSetter([.. Keywords]);

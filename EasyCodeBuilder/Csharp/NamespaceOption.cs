@@ -52,9 +52,9 @@ public static class NameSpaceOptionsExtensions
     /// <summary>
     /// set name of namespace
     /// </summary>
-    /// <param name="ns"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /// <param name="ns">The namespace option.</param>
+    /// <param name="name">The namespace name.</param>
+    /// <returns>The namespace option, for fluent chaining.</returns>
     public static NamespaceOption WithName(this NamespaceOption ns, string name)
     {
         ns.Name = name;
@@ -64,18 +64,18 @@ public static class NameSpaceOptionsExtensions
     /// <summary>
     /// add type into namespace
     /// </summary>
-    /// <param name="ns"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="ns">The namespace option.</param>
+    /// <param name="configure">Action to configure the type.</param>
+    /// <returns>The namespace option, for fluent chaining.</returns>
     public static NamespaceOption Type(this NamespaceOption ns, Action<TypeOption> configure) =>
         ns.AddChild(configure);
 
     /// <summary>
     /// add class into namespace
     /// </summary>
-    /// <param name="ns"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="ns">The namespace option.</param>
+    /// <param name="configure">Action to configure the class.</param>
+    /// <returns>The namespace option, for fluent chaining.</returns>
     public static NamespaceOption Class(this NamespaceOption ns, Action<TypeOption> configure) =>
         ns.AddChild(
             (TypeOption type) =>
@@ -88,9 +88,9 @@ public static class NameSpaceOptionsExtensions
     /// <summary>
     /// add struct into namespace
     /// </summary>
-    /// <param name="ns"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="ns">The namespace option.</param>
+    /// <param name="configure">Action to configure the struct.</param>
+    /// <returns>The namespace option, for fluent chaining.</returns>
     public static NamespaceOption Struct(this NamespaceOption ns, Action<TypeOption> configure) =>
         ns.AddChild(
             (TypeOption type) =>
@@ -103,9 +103,9 @@ public static class NameSpaceOptionsExtensions
     /// <summary>
     /// add enum into namespace
     /// </summary>
-    /// <param name="ns"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="ns">The namespace option.</param>
+    /// <param name="configure">Action to configure the enum.</param>
+    /// <returns>The namespace option, for fluent chaining.</returns>
     public static NamespaceOption Enum(this NamespaceOption ns, Action<TypeOption> configure) =>
         ns.AddChild(
             (TypeOption type) =>

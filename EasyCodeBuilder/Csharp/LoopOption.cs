@@ -98,9 +98,9 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set initializer of for loop
     /// </summary>
-    /// <param name="forOption"></param>
-    /// <param name="initializer"></param>
-    /// <returns></returns>
+    /// <param name="forOption">The for-loop option.</param>
+    /// <param name="initializer">The initializer expression (e.g. "int i = 0").</param>
+    /// <returns>The for-loop option, for fluent chaining.</returns>
     public static ForOption WithInitializer(this ForOption forOption, string initializer)
     {
         forOption.Initializer = initializer;
@@ -110,9 +110,9 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set condition of for or while loop
     /// </summary>
-    /// <param name="loopOption"></param>
-    /// <param name="condition"></param>
-    /// <returns></returns>
+    /// <param name="loopOption">The for-loop option.</param>
+    /// <param name="condition">The condition expression (e.g. "i &lt; 10").</param>
+    /// <returns>The for-loop option, for fluent chaining.</returns>
     public static ForOption WithCondition(this ForOption loopOption, string condition)
     {
         loopOption.Condition = condition;
@@ -122,9 +122,9 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set iterator of for loop
     /// </summary>
-    /// <param name="forOption"></param>
-    /// <param name="iterator"></param>
-    /// <returns></returns>
+    /// <param name="forOption">The for-loop option.</param>
+    /// <param name="iterator">The iterator expression (e.g. "i++").</param>
+    /// <returns>The for-loop option, for fluent chaining.</returns>
     public static ForOption WithIterator(this ForOption forOption, string iterator)
     {
         forOption.Iterator = iterator;
@@ -134,9 +134,9 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set condition of while loop
     /// </summary>
-    /// <param name="whileOption"></param>
-    /// <param name="condition"></param>
-    /// <returns></returns>
+    /// <param name="whileOption">The while-loop option.</param>
+    /// <param name="condition">The condition expression.</param>
+    /// <returns>The while-loop option, for fluent chaining.</returns>
     public static WhileOption WithCondition(this WhileOption whileOption, string condition)
     {
         whileOption.Condition = condition;
@@ -147,9 +147,9 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set condition of do-while loop
     /// </summary>
-    /// <param name="doWhileOption"></param>
-    /// <param name="condition"></param>
-    /// <returns></returns>
+    /// <param name="doWhileOption">The do-while loop option.</param>
+    /// <param name="condition">The condition expression.</param>
+    /// <returns>The do-while loop option, for fluent chaining.</returns>
     public static DoWhileOption WithCondition(this DoWhileOption doWhileOption, string condition)
     {
         doWhileOption.Condition = condition;
@@ -159,11 +159,11 @@ public static class LoopOptionExtensions
     /// <summary>
     /// set variable type, name and collection of foreach loop
     /// </summary>
-    /// <param name="foreachOption"></param>
-    /// <param name="variableType"></param>
-    /// <param name="variableName"></param>
-    /// <param name="collection"></param>
-    /// <returns></returns>
+    /// <param name="foreachOption">The foreach-loop option.</param>
+    /// <param name="variableType">The variable type (e.g. "var").</param>
+    /// <param name="variableName">The variable name.</param>
+    /// <param name="collection">The collection expression to iterate over.</param>
+    /// <returns>The foreach-loop option, for fluent chaining.</returns>
     public static ForeachOption WithVariable(this ForeachOption foreachOption, string variableType, string variableName, string collection)
     {
         foreachOption.VariableType = variableType;

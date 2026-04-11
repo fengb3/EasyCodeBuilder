@@ -134,9 +134,9 @@ public static class TypeOptionExtensions
     /// <summary>
     /// set name of type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="name">The type name.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption WithName(this TypeOption type, string name)
     {
         type.Name = name;
@@ -146,9 +146,9 @@ public static class TypeOptionExtensions
     /// <summary>
     /// add keywords into type, this can be public, private, abstract, sealed, partial, etc. duplicates are ignored
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="keywords"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="keywords">The keywords to add.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption WithKeywords(this TypeOption type, params string[] keywords)
     {
         foreach (var keyword in keywords)
@@ -157,11 +157,11 @@ public static class TypeOptionExtensions
     }
 
     /// <summary>
-    /// 
+    /// Add a single keyword to the type (e.g. "public", "abstract"). Duplicates are ignored.
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="keyword"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="keyword">The keyword to add.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption WithKeyword(this TypeOption type, string keyword)
     {
         type.Keywords.Add(keyword);
@@ -171,9 +171,9 @@ public static class TypeOptionExtensions
     /// <summary>
     /// add base types or interface to inherit or implement, duplicates are ignored
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="baseTypes"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="baseTypes">Base class or interface names to inherit/implement.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption Inherit(this TypeOption type, params string[] baseTypes)
     {
         foreach (var baseType in baseTypes)
@@ -220,9 +220,9 @@ public static class TypeOptionExtensions
     /// <summary>
     ///  add method into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Function to configure the method and return it.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption Method(this TypeOption type, Func<MethodOption, MethodOption> configure)
         => type.Method(m => { configure(m); });
 
@@ -230,45 +230,45 @@ public static class TypeOptionExtensions
     /// <summary>
     ///  add method into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Action to configure the method.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption Method(this TypeOption type, Action<MethodOption> configure)
         => type.AddChild(configure);
 
     /// <summary>
     /// add auto property into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Function to configure the auto-property and return it.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption AutoProperty(this TypeOption type, Func<AutoPropertyOption, AutoPropertyOption> configure)
         => type.AutoProperty(p => { configure(p); });
-    
+
     /// <summary>
     /// add auto property into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Action to configure the auto-property.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption AutoProperty(this TypeOption type, Action<AutoPropertyOption> configure)
         => type.AddChild(configure);
 
     /// <summary>
     /// add field into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Function to configure the field and return it.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption Field(this TypeOption type, Func<FieldOption, FieldOption> configure)
         => type.Field(f => { configure(f); });
 
     /// <summary>
     /// add field into type
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="type">The type option.</param>
+    /// <param name="configure">Action to configure the field.</param>
+    /// <returns>The type option, for fluent chaining.</returns>
     public static TypeOption Field(this TypeOption type, Action<FieldOption> configure)
         => type.AddChild(configure);
 

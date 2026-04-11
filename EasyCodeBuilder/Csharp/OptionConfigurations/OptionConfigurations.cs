@@ -167,9 +167,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// 添加自动属性
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Function to configure the auto-property and return it.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption AutoProperty(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Func<AutoPropertyOption, AutoPropertyOption> configure
@@ -177,7 +177,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
         {
-            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });
@@ -187,9 +186,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// 添加自动属性
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Action to configure the auto-property.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption AutoProperty(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Action<AutoPropertyOption> configure
@@ -197,7 +196,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, AutoPropertyOption>(po =>
         {
-            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });
@@ -207,9 +205,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// add field into type
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Function to configure the field and return it.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption Field(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Func<FieldOption, FieldOption> configure
@@ -217,7 +215,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
         {
-            // ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
             configurator.Configure(keyword => fo.WithKeyword(keyword));
             configure(fo);
         });
@@ -227,9 +224,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// add field into type
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Action to configure the field.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption Field(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Action<FieldOption> configure
@@ -237,7 +234,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, FieldOption>(fo =>
         {
-            // ApplyKeywords(configurator, keyword => fo.WithKeyword(keyword));
             configurator.Configure(keyword => fo.WithKeyword(keyword));
             configure(fo);
         });
@@ -248,9 +244,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// add property into type
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Function to configure the property and return it.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption Property(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Func<PropertyOption, PropertyOption> configure
@@ -258,7 +254,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, PropertyOption>(po =>
         {
-            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });
@@ -268,9 +263,9 @@ public static class KeywordConfiguratorExtensions
     /// <summary>
     /// add property into type
     /// </summary>
-    /// <param name="configurator"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="configurator">The keyword configurator.</param>
+    /// <param name="configure">Action to configure the property.</param>
+    /// <returns>The parent type option, for fluent chaining.</returns>
     public static TypeOption Property(
         this KeywordOptionConfigurator<TypeOption> configurator,
         Action<PropertyOption> configure
@@ -278,7 +273,6 @@ public static class KeywordConfiguratorExtensions
     {
         configurator.Parent.AddChild<TypeOption, PropertyOption>(po =>
         {
-            // ApplyKeywords(configurator, keyword => po.WithKeyword(keyword));
             configurator.Configure(keyword => po.WithKeyword(keyword));
             configure(po);
         });

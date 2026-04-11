@@ -43,9 +43,9 @@ public static class ConstructorOptionExtensions
     /// <summary>
     /// add keyword into constructor, this can be public, private, protected, internal, static, etc. duplicates are ignored
     /// </summary>
-    /// <param name="constructor"></param>
-    /// <param name="keyword"></param>
-    /// <returns></returns>
+    /// <param name="constructor">The constructor option.</param>
+    /// <param name="keyword">The keyword to add.</param>
+    /// <returns>The constructor option, for fluent chaining.</returns>
     public static ConstructorOption WithKeyword(this ConstructorOption constructor, string keyword)
     {
         constructor.Keywords.Add(keyword);
@@ -55,9 +55,9 @@ public static class ConstructorOptionExtensions
     /// <summary>
     /// set name of constructor
     /// </summary>
-    /// <param name="constructor"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /// <param name="constructor">The constructor option.</param>
+    /// <param name="name">The constructor name (typically matches the enclosing type name).</param>
+    /// <returns>The constructor option, for fluent chaining.</returns>
     public static ConstructorOption WithName(this ConstructorOption constructor, string name)
     {
         constructor.Name = name;
@@ -67,9 +67,9 @@ public static class ConstructorOptionExtensions
     /// <summary>
     /// add parameter into constructor, duplicates are ignored
     /// </summary>
-    /// <param name="constructor"></param>
-    /// <param name="parameter"></param>
-    /// <returns></returns>
+    /// <param name="constructor">The constructor option.</param>
+    /// <param name="parameter">The parameter declaration (e.g. "string name").</param>
+    /// <returns>The constructor option, for fluent chaining.</returns>
     public static ConstructorOption WithParameter(this ConstructorOption constructor, string parameter)
     {
         constructor.Parameters.Add(parameter);

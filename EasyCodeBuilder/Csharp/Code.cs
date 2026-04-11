@@ -4,14 +4,14 @@ using System.Linq;
 namespace Fengb3.EasyCodeBuilder.Csharp;
 
 /// <summary>
-/// 
+/// Provides the entry point and extension methods for building C# code using a configuration-based API.
 /// </summary>
 public static partial class Code
 {
     /// <summary>
-    /// 
+    /// Creates a new root <see cref="CodeOption"/> to begin building code.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A new <see cref="CodeOption"/> instance.</returns>
     public static CodeOption Create()
     {
         return new CodeOption();
@@ -80,13 +80,14 @@ public static partial class Code
         });
 
     /// <summary>
-    /// add and configure a child parent
+    /// Creates a new child option, configures it via <paramref name="configureChild"/>,
+    /// and attaches its <see cref="CodeOption.Build"/> to the parent's <see cref="CodeOption.OnChildren"/>.
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="configureChild"></param>
-    /// <typeparam name="TParent"></typeparam>
-    /// <typeparam name="TChild"></typeparam>
-    /// <returns></returns>
+    /// <param name="parent">The parent code option.</param>
+    /// <param name="configureChild">Action to configure the new child.</param>
+    /// <typeparam name="TParent">Parent option type.</typeparam>
+    /// <typeparam name="TChild">Child option type.</typeparam>
+    /// <returns>The parent option, for fluent chaining.</returns>
     public static TParent AddChild<TParent, TChild>(this TParent parent, Action<TChild> configureChild)
         where TParent : CodeOption where TChild : CodeOption, new()
     {
@@ -96,13 +97,13 @@ public static partial class Code
     }
 
     /// <summary>
-    /// 
+    /// Attaches an existing child option's <see cref="CodeOption.Build"/> to the parent's <see cref="CodeOption.OnChildren"/>.
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="child"></param>
-    /// <typeparam name="TParent"></typeparam>
-    /// <typeparam name="TChild"></typeparam>
-    /// <returns></returns>
+    /// <param name="parent">The parent code option.</param>
+    /// <param name="child">The child code option to attach.</param>
+    /// <typeparam name="TParent">Parent option type.</typeparam>
+    /// <typeparam name="TChild">Child option type.</typeparam>
+    /// <returns>The parent option, for fluent chaining.</returns>
     public static TParent AddChild<TParent, TChild>(this TParent parent, TChild child)
         where TParent : CodeOption where TChild : CodeOption
     {
@@ -123,20 +124,20 @@ public static partial class Code
     }
 
     /// <summary>
-    /// 
+    /// Add a namespace to the code.
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="option">The root code option.</param>
+    /// <param name="configure">Action to configure the namespace.</param>
+    /// <returns>The root code option, for fluent chaining.</returns>
     public static CodeOption Namespace(this CodeOption option, Action<NamespaceOption> configure)
         => option.AddChild(configure);
 
     /// <summary>
-    /// 
+    /// Add a class to the code.
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="configure"></param>
-    /// <returns></returns>
+    /// <param name="option">The root code option.</param>
+    /// <param name="configure">Action to configure the class.</param>
+    /// <returns>The root code option, for fluent chaining.</returns>
     public static CodeOption Class(this CodeOption option, Action<TypeOption> configure)
         => option.AddChild(configure);
 
@@ -144,10 +145,10 @@ public static partial class Code
     /// <summary>
     /// add attribute to an element
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="attributes"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <param name="option">The code option to add attributes to.</param>
+    /// <param name="attributes">Attribute declarations (e.g. "Serializable", "Obsolete").</param>
+    /// <typeparam name="T">The option type.</typeparam>
+    /// <returns>The option, for fluent chaining.</returns>
     public static T WithAttributes<T>(this T option, params string[] attributes) where T : CodeOption
     {
         option.BeforeChildren += cb => cb.AppendLines(attributes.Select(attr => $"[{attr}]"));
@@ -157,10 +158,10 @@ public static partial class Code
     /// <summary>
     /// add XML doc to an element
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="configure"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <param name="option">The code option to add XML documentation to.</param>
+    /// <param name="configure">Action to configure the XML doc.</param>
+    /// <typeparam name="T">The option type.</typeparam>
+    /// <returns>The option, for fluent chaining.</returns>
     public static T WithXmlDoc<T>(this T option, Action<XmlDocOption> configure) where T : CodeOption
     {
         option.BeforeChildren += cb =>
@@ -175,12 +176,12 @@ public static partial class Code
 
 
     /// <summary>
-    /// Add single or multiple lines to a code block 
+    /// Add single or multiple lines to a code block
     /// </summary>
-    /// <param name="option"></param>
-    /// <param name="lines"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <param name="option">The code option.</param>
+    /// <param name="lines">The lines of code to add.</param>
+    /// <typeparam name="T">The option type.</typeparam>
+    /// <returns>The option, for fluent chaining.</returns>
     public static T AppendLines<T>(this T option, params string[] lines) where T : CodeOption
     {
         foreach (var line in lines)

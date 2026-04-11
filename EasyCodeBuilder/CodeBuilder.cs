@@ -48,7 +48,8 @@ public class CodeBuilder
     }
 
     /// <summary>
-    /// 
+    /// Struct that increments <see cref="CodeBuilder.Depth"/> on creation and decrements on disposal.
+    /// Used with <c>using</c> to scope indentation levels.
     /// </summary>
     private readonly struct Indenter : IDisposable
     {
@@ -317,7 +318,7 @@ public class CodeBuilder
     }
 
     /// <summary>
-    /// 字符串啦
+    /// Returns the generated code as a string
     /// </summary>
     /// <returns></returns>
     public override string ToString() => SB.ToString();
@@ -327,7 +328,7 @@ public class CodeBuilder
     #region 重载运算符
 
     /// <summary>
-    /// 重载运算符 +, 调用 AppendLine 方法
+    /// Appends a line of code using the + operator
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="text"></param>
@@ -338,7 +339,7 @@ public class CodeBuilder
     }
 
     /// <summary>
-    /// 重载 运算符，调用 AppendLine 方法
+    /// Appends a line of code using the &lt;&lt; operator
     /// </summary>
     public static CodeBuilder operator <<(CodeBuilder builder, string text)
     {
@@ -346,7 +347,7 @@ public class CodeBuilder
     }
 
     /// <summary>
-    /// 重载 运算符，调用 Append 方法
+    /// Appends text without a newline using the &lt; operator
     /// </summary>
     public static CodeBuilder operator <(CodeBuilder builder, string text)
     {
@@ -354,8 +355,7 @@ public class CodeBuilder
     }
 
     /// <summary>
-    /// 重载 > 运算符（为了满足 C# 要求成对重载比较运算符）
-    /// 这里简单返回 builder 本身，不执行任何操作
+    /// Paired &gt; operator required by C# — no-op, returns the builder unchanged
     /// </summary>
     public static CodeBuilder operator >(CodeBuilder builder, string text)
     {
