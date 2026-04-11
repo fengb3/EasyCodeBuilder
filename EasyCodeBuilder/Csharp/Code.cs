@@ -27,8 +27,6 @@ public static partial class Code
             option.AddChild<CodeOption, UsingOption>(uo => { uo.Name = u; });
         }
 
-        // keep existing behavior: add a blank line after usings
-        option.OnChildren += cb => cb.AppendLine();
         return option;
     }
 

@@ -19,7 +19,6 @@ public partial class CsharpCodeOptionTests(ITestOutputHelper testOutputHelper)
         const string expected = """
                                 using System;
                                 using System.Collections.Generic;
-
                                 namespace MyNamespace
                                 {
                                 }                          

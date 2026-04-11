@@ -26,7 +26,7 @@ public class MethodOption : CodeOption
     /// <summary>
     /// Parameters of the method
     /// </summary>
-    public ICollection<string> Parameters { get; set; } = new HashSet<string>();
+    public ICollection<string> Parameters { get; set; } = new List<string>();
 
     /// <summary>
     /// Build the method code

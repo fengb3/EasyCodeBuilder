@@ -36,7 +36,6 @@ public class ReadmeExamplesVerificationTests
 
         const string expected = """
             using System;
-
             namespace MyProject
             {
               public class Person
@@ -77,7 +76,6 @@ public class ReadmeExamplesVerificationTests
 
         const string expected = """
             using System;
-
             namespace MyApp
             {
               public class Calculator
