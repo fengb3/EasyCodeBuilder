@@ -42,6 +42,11 @@ public class NamespaceOption : CodeOption
     /// 私有访问修饰符配置器
     /// </summary>
     public KeywordOptionConfigurator<NamespaceOption> Private => Has.Private;
+
+    /// <summary>
+    /// partial 修饰符配置器
+    /// </summary>
+    public KeywordOptionConfigurator<NamespaceOption> Partial => Has.Partial;
 }
 
 /// <summary>

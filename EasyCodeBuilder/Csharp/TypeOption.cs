@@ -112,6 +112,11 @@ public class TypeOption : CodeOption
     /// 静态修饰符配置器
     /// </summary>
     public KeywordOptionConfigurator<TypeOption> Static => KeywordConfigurator.Static;
+
+    /// <summary>
+    /// partial 修饰符配置器
+    /// </summary>
+    public KeywordOptionConfigurator<TypeOption> Partial => KeywordConfigurator.Partial;
 }
 
 /// <summary>

@@ -132,6 +132,48 @@ public static class KeywordConfiguratorExtensions
 
     #endregion
 
+    #region Add nested type to type
+
+    /// <summary>
+    /// 添加嵌套类
+    /// </summary>
+    /// <param name="configurator">关键字配置器</param>
+    /// <param name="configure">嵌套类选项配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption NestedClass(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Func<TypeOption, TypeOption> configure
+    )
+    {
+        configurator.Parent.AddChild<TypeOption, TypeOption>(to =>
+        {
+            configurator.Configure(keyword => to.WithKeyword(keyword));
+            configure(to);
+        });
+        return configurator.Parent;
+    }
+
+    /// <summary>
+    /// 添加嵌套类
+    /// </summary>
+    /// <param name="configurator">关键字配置器</param>
+    /// <param name="configure">嵌套类选项配置委托</param>
+    /// <returns>类型选项</returns>
+    public static TypeOption NestedClass(
+        this KeywordOptionConfigurator<TypeOption> configurator,
+        Action<TypeOption> configure
+    )
+    {
+        configurator.Parent.AddChild<TypeOption, TypeOption>(to =>
+        {
+            configurator.Configure(keyword => to.WithKeyword(keyword));
+            configure(to);
+        });
+        return configurator.Parent;
+    }
+
+    #endregion
+
     #region Add member to type
 
     /// <summary>
