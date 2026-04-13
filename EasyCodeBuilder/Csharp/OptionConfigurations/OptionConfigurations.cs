@@ -164,12 +164,11 @@ public static class KeywordConfiguratorExtensions
         Action<TypeOption> configure
     )
     {
-        configurator.Parent.AddChild<TypeOption, TypeOption>(to =>
+        return configurator.NestedClass(to =>
         {
-            configurator.Configure(keyword => to.WithKeyword(keyword));
             configure(to);
+            return to;
         });
-        return configurator.Parent;
     }
 
     #endregion
