@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Fengb3.EasyCodeBuilder.Csharp;
 
@@ -7,7 +8,8 @@ namespace Fengb3.EasyCodeBuilder.Csharp;
 /// </summary>
 public class TryOption : CodeOption
 {
-    private CodeRenderFragment? _clauses;
+    private readonly List<CatchOption> _catches = new List<CatchOption>();
+    private FinallyOption? _finally;
 
     /// <summary>
     /// 构建代码
@@ -16,15 +18,37 @@ public class TryOption : CodeOption
     /// <returns>代码构建器</returns>
     public override CodeBuilder Build(CodeBuilder cb)
     {
+        if (_catches.Count == 0 && _finally is null)
+        {
+            throw new InvalidOperationException("A try statement must include at least one catch or finally clause.");
+        }
+
         BeforeChildren?.Invoke(cb);
         cb.CodeBlock(OnChildren, "try");
-        _clauses?.Invoke(cb);
+        foreach (var catchOption in _catches)
+        {
+            catchOption.Build(cb);
+        }
+        _finally?.Build(cb);
         return cb;
     }
 
-    internal void AddClause(CodeRenderFragment clause)
+    internal void AddCatch(CatchOption catchOption)
     {
-        _clauses += clause;
+        if (_finally is not null)
+        {
+            throw new InvalidOperationException("A catch clause cannot appear after a finally clause.");
+        }
+        _catches.Add(catchOption);
+    }
+
+    internal void SetFinally(FinallyOption finallyOption)
+    {
+        if (_finally is not null)
+        {
+            throw new InvalidOperationException("A try statement cannot have more than one finally clause.");
+        }
+        _finally = finallyOption;
     }
 }
 
@@ -105,9 +129,10 @@ public static class TryCatchFinallyOptionExtensions
     /// <returns>try 语句选项</returns>
     public static TryOption Catch(this TryOption tryOption, Action<CatchOption> configure)
     {
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
         var catchOption = new CatchOption();
         configure(catchOption);
-        tryOption.AddClause(catchOption.Build);
+        tryOption.AddCatch(catchOption);
         return tryOption;
     }
 
@@ -119,9 +144,10 @@ public static class TryCatchFinallyOptionExtensions
     /// <returns>try 语句选项</returns>
     public static TryOption Finally(this TryOption tryOption, Action<FinallyOption> configure)
     {
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
         var finallyOption = new FinallyOption();
         configure(finallyOption);
-        tryOption.AddClause(finallyOption.Build);
+        tryOption.SetFinally(finallyOption);
         return tryOption;
     }
 

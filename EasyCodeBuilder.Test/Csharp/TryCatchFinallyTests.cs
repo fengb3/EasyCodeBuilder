@@ -1,3 +1,5 @@
+using System;
+using Fengb3.EasyCodeBuilder;
 using Fengb3.EasyCodeBuilder.Csharp;
 using Xunit.Abstractions;
 
@@ -8,30 +10,52 @@ public class TryCatchFinallyTests(ITestOutputHelper output)
     private static string Norm(string text) => text.Replace("\r\n", "\n").Trim();
 
     [Fact]
-    public void TryOnly()
+    public void TryWithoutCatchOrFinallyThrows()
     {
-        var code = new MethodOption()
-            .WithKeyword("public")
-            .WithName("Run")
-            .WithReturnType("void")
-            .Try(@try =>
-            {
-                @try.AppendLine("DoWork();");
-            })
-            .Build();
+        var tryOption = new TryOption();
+        tryOption.AppendLine("DoWork();");
 
-        var expected = """
-            public void Run()
-            {
-              try
-              {
-                DoWork();
-              }
-            }
-            """;
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            var cb = new CodeBuilder(' ', 2, "\n{", "}", 1024);
+            tryOption.Build(cb);
+        });
+    }
 
-        Assert.Equal(Norm(expected), Norm(code));
-        output.WriteLine(code);
+    [Fact]
+    public void CatchAfterFinallyThrows()
+    {
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            var tryOption = new TryOption();
+            tryOption.Finally(f => f.AppendLine("Cleanup();"));
+            tryOption.Catch(c => c.AppendLine("Handle();"));
+        });
+    }
+
+    [Fact]
+    public void MultipleFinallyThrows()
+    {
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            var tryOption = new TryOption();
+            tryOption.Finally(f => f.AppendLine("Cleanup1();"));
+            tryOption.Finally(f => f.AppendLine("Cleanup2();"));
+        });
+    }
+
+    [Fact]
+    public void NullCatchConfigureThrows()
+    {
+        var tryOption = new TryOption();
+        Assert.Throws<ArgumentNullException>(() => tryOption.Catch(null!));
+    }
+
+    [Fact]
+    public void NullFinallyConfigureThrows()
+    {
+        var tryOption = new TryOption();
+        Assert.Throws<ArgumentNullException>(() => tryOption.Finally(null!));
     }
 
     [Fact]
