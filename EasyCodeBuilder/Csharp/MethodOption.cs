@@ -169,4 +169,13 @@ public static class MethodOptionExtensions
     /// <returns>方法选项</returns>
     public static MethodOption Switch(this MethodOption method, Action<SwitchOption> configure)
         => method.AddChild(configure);
+
+    /// <summary>
+    /// add try-catch-finally statement
+    /// </summary>
+    /// <param name="method">方法选项</param>
+    /// <param name="configure">try 语句配置委托</param>
+    /// <returns>方法选项</returns>
+    public static MethodOption Try(this MethodOption method, Action<TryOption> configure)
+        => method.AddChild(configure);
 }
