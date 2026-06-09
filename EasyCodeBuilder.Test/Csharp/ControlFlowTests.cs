@@ -279,4 +279,198 @@ public class ControlFlowTests(ITestOutputHelper output)
         Assert.Contains("return \"Unknown\";", code);
         output.WriteLine(code);
     }
+
+    [Fact]
+    public void ForContainingSwitch_Issue11()
+    {
+        var code = new MethodOption()
+            .WithKeyword("public")
+            .WithName("Parse")
+            .WithReturnType("void")
+            .WithParameters("string[] args")
+            .For(f =>
+            {
+                f.WithInitializer("int i = 0")
+                 .WithCondition("i < args.Length")
+                 .WithIterator("i++");
+
+                f.Switch(s =>
+                {
+                    s.WithExpression("args[i]");
+                    s.Case(c =>
+                    {
+                        c.Value = "\"--x\"";
+                        c.AppendLine("x = int.Parse(args[++i]);");
+                        c.AppendLine("break;");
+                    });
+                    s.Default(d =>
+                    {
+                        d.AppendLine("break;");
+                    });
+                });
+            })
+            .Build();
+
+        var expected = """
+            public void Parse(string[] args)
+            {
+              for (int i = 0; i < args.Length; i++)
+              {
+                switch (args[i])
+                {
+                  case "--x":
+                  {
+                    x = int.Parse(args[++i]);
+                    break;
+                  }
+                  default:
+                  {
+                    break;
+                  }
+                }
+              }
+            }
+            """;
+
+        Assert.Equal(Norm(expected), Norm(code));
+        output.WriteLine(code);
+    }
+
+    [Fact]
+    public void DeepNesting_ForSwitchCaseIf()
+    {
+        var code = new MethodOption()
+            .WithKeyword("public")
+            .WithName("Deep")
+            .WithReturnType("void")
+            .For(f =>
+            {
+                f.WithInitializer("int i = 0")
+                 .WithCondition("i < items.Count")
+                 .WithIterator("i++");
+
+                f.Switch(s =>
+                {
+                    s.WithExpression("items[i].Type");
+                    s.Case(c =>
+                    {
+                        c.Value = "\"A\"";
+                        c.If(@if =>
+                        {
+                            @if.Condition = "items[i].Value > 0";
+                            @if.AppendLine("Process(items[i]);");
+                        });
+                    });
+                });
+            })
+            .Build();
+
+        Assert.Contains("for (int i = 0; i < items.Count; i++)", code);
+        Assert.Contains("switch (items[i].Type)", code);
+        Assert.Contains("case \"A\":", code);
+        Assert.Contains("if (items[i].Value > 0)", code);
+        Assert.Contains("Process(items[i]);", code);
+        output.WriteLine(code);
+    }
+
+    [Fact]
+    public void WhileContainingFor()
+    {
+        var code = new MethodOption()
+            .WithKeyword("public")
+            .WithName("Retry")
+            .WithReturnType("void")
+            .While(w =>
+            {
+                w.Condition = "retry";
+                w.For(f =>
+                {
+                    f.WithInitializer("int i = 0")
+                     .WithCondition("i < retries")
+                     .WithIterator("i++");
+                    f.AppendLine("Attempt(i);");
+                });
+            })
+            .Build();
+
+        Assert.Contains("while (retry)", code);
+        Assert.Contains("for (int i = 0; i < retries; i++)", code);
+        Assert.Contains("Attempt(i);", code);
+        output.WriteLine(code);
+    }
+
+    [Fact]
+    public void TryInsideFor()
+    {
+        var code = new MethodOption()
+            .WithKeyword("public")
+            .WithName("SafeIterate")
+            .WithReturnType("void")
+            .WithParameters("List<string> items")
+            .For(f =>
+            {
+                f.WithInitializer("int i = 0")
+                 .WithCondition("i < items.Count")
+                 .WithIterator("i++");
+
+                f.Try(t =>
+                {
+                    t.AppendLine("Process(items[i]);");
+                    t.Catch(c =>
+                    {
+                        c.WithExceptionType("Exception")
+                         .WithVariableName("ex");
+                        c.AppendLine("Log(ex);");
+                    });
+                });
+            })
+            .Build();
+
+        Assert.Contains("for (int i = 0; i < items.Count; i++)", code);
+        Assert.Contains("try", code);
+        Assert.Contains("Process(items[i]);", code);
+        Assert.Contains("catch (Exception ex)", code);
+        Assert.Contains("Log(ex);", code);
+        output.WriteLine(code);
+    }
+
+    [Fact]
+    public void IfElseIfElseInsideFor()
+    {
+        var code = new MethodOption()
+            .WithKeyword("public")
+            .WithName("Classify")
+            .WithReturnType("void")
+            .For(f =>
+            {
+                f.WithInitializer("int i = 0")
+                 .WithCondition("i < values.Length")
+                 .WithIterator("i++");
+
+                f.If(@if =>
+                {
+                    @if.Condition = "values[i] > 0";
+                    @if.AppendLine("Console.WriteLine(\"positive\");");
+                })
+                .ElseIf(elseIf =>
+                {
+                    elseIf.Condition = "values[i] < 0";
+                    elseIf.AppendLine("Console.WriteLine(\"negative\");");
+                })
+                .Else(@else =>
+                {
+                    @else.AppendLine("Console.WriteLine(\"zero\");");
+                });
+            })
+            .Build();
+
+        Assert.Contains("for (int i = 0; i < values.Length; i++)", code);
+        Assert.Contains("if (values[i] > 0)", code);
+        Assert.Contains("else if (values[i] < 0)", code);
+        Assert.Contains("else", code);
+        Assert.Contains("Console.WriteLine(\"positive\");", code);
+        Assert.Contains("Console.WriteLine(\"negative\");", code);
+        Assert.Contains("Console.WriteLine(\"zero\");", code);
+        output.WriteLine(code);
+    }
 }
