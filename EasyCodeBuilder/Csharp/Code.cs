@@ -122,6 +122,87 @@ public static partial class Code
     }
 
     /// <summary>
+    /// Add an if statement to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the if statement.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption If(this CodeOption option, Action<IfOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add an else statement to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the else statement.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption Else(this CodeOption option, Action<ElseOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add an else-if statement to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the else-if statement.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption ElseIf(this CodeOption option, Action<ElseIfOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a for loop to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the for loop.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption For(this CodeOption option, Action<ForOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a while loop to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the while loop.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption While(this CodeOption option, Action<WhileOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a do-while loop to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the do-while loop.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption DoWhile(this CodeOption option, Action<DoWhileOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a foreach loop to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the foreach loop.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption Foreach(this CodeOption option, Action<ForeachOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a switch statement to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the switch statement.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption Switch(this CodeOption option, Action<SwitchOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
+    /// Add a try-catch-finally statement to the code block.
+    /// </summary>
+    /// <param name="option">The code option.</param>
+    /// <param name="configure">Action to configure the try statement.</param>
+    /// <returns>The code option, for fluent chaining.</returns>
+    public static CodeOption Try(this CodeOption option, Action<TryOption> configure)
+        => option.AddChild(configure);
+
+    /// <summary>
     /// Add a namespace to the code.
     /// </summary>
     /// <param name="option">The root code option.</param>
